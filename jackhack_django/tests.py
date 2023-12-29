@@ -7,13 +7,10 @@ class SaveGameTest(GameTestCase, TestCase):
   def game(self):
     return SaveGame.objects.create(player_name="Jack")
 
-  def test_player_name(self):
-    game = SaveGame.objects.create(player_name="Jack")
-    self.assertEqual(game.player_name, "Jack")
-    game_reloaded = SaveGame.objects.get(player_name="Jack")
-    self.assertEqual(game_reloaded.player_name, "Jack")
+  def test_saved_player_name(self):
+    reloaded_game = SaveGame.objects.get(id=self.game().id)
+    self.assertEqual(reloaded_game.player_name, "Jack")
 
   def test_started_game_saved(self):
-    game = self.started_game()
-    reloaded_game = SaveGame.objects.get(id=game.id)
-    self.assertEqual(GameTestCase.EXPECTED_DAYS, [{'daynum': d.daynum, 'town_gold': d.town_gold, 'monster_gold': d.monster_gold, 'played': d.played} for d in reloaded_game.days()])
+    reloaded_game = SaveGame.objects.get(id=self.started_game().id)
+    self.assertEqual(self.days_to_dicts(reloaded_game), GameTestCase.EXPECTED_DAYS)

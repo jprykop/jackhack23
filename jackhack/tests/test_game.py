@@ -117,7 +117,16 @@ class GameTestCase(unittest.TestCase):
     game.start()
     return game
 
+  @classmethod
+  def day_to_dict(cls, day):
+    return {'daynum': day.daynum, 'town_gold': day.town_gold, 'monster_gold': day.monster_gold, 'played': day.played}
+
+  @classmethod
+  def days_to_dicts(cls, game):
+    return [cls.day_to_dict(day) for day in game.days()]
+
+  def test_player_name(self):
+    self.assertEqual(self.game().player_name, "Jack")
+
   def test_start(self):
-    self.assertEqual([
-      {'daynum': d.daynum, 'town_gold': d.town_gold, 'monster_gold': d.monster_gold, 'played': d.played} for d in self.started_game().days()
-    ], GameTestCase.EXPECTED_DAYS)
+    self.assertEqual(self.days_to_dicts(self.started_game()), GameTestCase.EXPECTED_DAYS)

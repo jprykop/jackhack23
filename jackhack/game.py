@@ -4,8 +4,7 @@ class InvalidMove(Exception):
   pass
 
 class Day:
-  MAX_PLAYABLE_DAYS = 99
-  MAX_DAYS = MAX_PLAYABLE_DAYS + 1
+  MAX_DAYS = 100
 
   def __init__(self, *, daynum, town_gold=None, monster_gold=None, played=False):
     if daynum < 1 or daynum > self.MAX_DAYS:
