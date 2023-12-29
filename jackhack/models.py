@@ -16,7 +16,7 @@ class FibonacciMixin:
   """Mixin for weighting objects using the fibonacci sequence"""
 
   @classmethod
-  def from_value_floor(cls,value):
+  def from_value_floor(cls, value):
     """Return an object for the maximum number with a value no greater than the given value"""
     if value < 1:
       raise IndexError
@@ -28,7 +28,7 @@ class FibonacciMixin:
     return cls(number)
 
   @classmethod
-  def from_value_ceiling(cls,value):
+  def from_value_ceiling(cls, value):
     """Return an object for the minimum number with a value no less than the given value"""
     if value < 1:
       raise IndexError
@@ -42,14 +42,14 @@ class FibonacciMixin:
     return cls(number)
 
   @classmethod
-  def random(cls,max):
+  def random(cls, max):
     """Return an object for a random number between 1 and max, weighted by values, with lower numbers the rarest"""
-    return cls.from_value_ceiling(random.randint(1, cls(max).value))
+    return cls.from_value_ceiling(random.randint(1, FibonacciMixin(max).value))
 
   @classmethod
-  def reverse_random(cls,max):
+  def reverse_random(cls, max):
     """Return an object for a random number between 1 and max, weighted by values, with higher numbers the rarest"""
-    return cls(max + 1 - cls.random(max).number)
+    return cls(max + 1 - FibonacciMixin.random(max).number)
 
   def __init__(self,number):
     if number < 1:
