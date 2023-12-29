@@ -15,24 +15,11 @@ class Day:
     self.monster_gold = monster_gold
     self.played = played
 
-class Days:
-  def __init__(self):
-    self._list = []
-
-  def append(self, obj):
-    self._list.append(obj).sort(key=Day.daynum)
-
-  def current(self):
-    next(day for day in self._list if not day.played)
-
-  def by_day(self, daynum):
-    self._list[daynum - 1]
-
 class Game:
   # methods to override for django version
 
-  def __init__(self, *args, **kwargs):
-    self.player_name = kwargs["player_name"]
+  def __init__(self, *, player_name):
+    self.player_name = player_name
     self._days = []
 
   def _add_day(self, attributes):
