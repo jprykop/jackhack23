@@ -13,12 +13,19 @@ class SaveGame(jackhack.game.Game, models.Model):
 
   def __init__(self, *args, **kwargs):
     models.Model.__init__(self, *args, **kwargs)
-#    gameargs = model_to_dict(self, fields=[field.name for field in self._meta.fields])
-#    jackhack.game.Game.__init__(self, **gameargs)
-    jackhack.game.Game.__init__(self, player_name=self.player_name)
 
-# class Day(models.Model):
-#   game = models.ForeignKey(Game, on_delete=models.CASCADE)
-#   town_gold = models.IntegerField(blank=True, null=True)
-#   monster_gold = models.IntegerField(blank=True, null=True)
-#   terrain = models.IntegerField()
+  def _add_day(self, attributes):
+    SaveDay.objects.create(game=self, **attributes)
+
+  def days(self):
+    return self.saveday_set.all()
+
+class SaveDay(jackhack.game.Day, models.Model):
+  game = models.ForeignKey(SaveGame, on_delete=models.CASCADE)
+  daynum = models.IntegerField(choices=[(x,x) for x in range(1,101)])
+  town_gold = models.IntegerField(blank=True, null=True)
+  monster_gold = models.IntegerField(blank=True, null=True)
+  played = models.BooleanField(default=False)
+
+  def __init__(self, *args, **kwargs):
+    models.Model.__init__(self, *args, **kwargs)
