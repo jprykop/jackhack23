@@ -82,5 +82,11 @@ class FibonacciMixinTestCase(unittest.TestCase):
     with self.assertRaises(IndexError):
       FibonacciMixin.reverse_random(-1)
 
+  def test_equality(self):
+    one = FibonacciMixin(3)
+    two = FibonacciMixin(3)
+    self.assertIsNot(one, two)
+    self.assertEqual(one, two)
+
 if __name__ == '__main__':
     unittest.main()

@@ -47,3 +47,6 @@ class FibonacciMixin:
     self.value = 0
     for i in range(1, self.number+1):
       self.value += i
+
+  def __eq__(self, other):
+    return self.number == other.number
