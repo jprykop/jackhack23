@@ -16,6 +16,17 @@ class Day:
 
   MAX_DAYS = 100
 
+  def acquire_town_gold(self):
+    self.town_gold_acquired = self.town_gold
+
+  def acquire_monster_gold(self):
+    self.monster_gold_acquired = self.monster_gold
+
+  def spend_gold(self, amount):
+    if self.gold_spent is None:
+      self.gold_spent = 0
+    self.gold_spent += amount
+
   def to_dict(self):
     return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
 

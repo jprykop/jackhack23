@@ -145,3 +145,32 @@ class GameTestCase(unittest.TestCase):
 
   def test_start_with_zero_gold(self):
     self.assertEqual(self.started_game().gold(), 0)
+
+  def test_acquire_town_gold(self):
+    game = self.started_game()
+    day = game.day(3)
+    day.acquire_town_gold()
+    self.assertEqual(day.town_gold_acquired, 2)
+    self.assertEqual(game.gold(), 2)
+
+  def test_acquire_monster_gold(self):
+    game = self.started_game()
+    day = game.day(26)
+    day.acquire_monster_gold()
+    self.assertEqual(day.monster_gold_acquired, 16)
+    self.assertEqual(game.gold(), 16)
+
+  def test_gold(self):
+    game = self.started_game()
+    tg = False
+    mg = False
+    for daynum in range(1,100):
+      day = game.day(daynum)
+      if tg and mg: # both true, go to only mg true
+        tg = False
+      elif mg:      # only mg true, go to both false
+        mg = False
+      elif tg:      # only tg true, go to both true
+        mg = True
+      else:         # both false, go to only tg true
+        tg = True
