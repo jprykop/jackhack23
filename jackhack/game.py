@@ -1,8 +1,86 @@
 import random
 from dataclasses import dataclass, field
+from jackhack.fibonacci_mixin import FibonacciMixin
 
 class InvalidMove(Exception):
   pass
+
+class MonsterKind(FibonacciMixin):
+  KINDS = (
+    'yeti',
+    'dinosaur',
+    'dragon',
+    'demon',
+    'giant',
+    'cockatrice',
+    'gargoyle',
+    'vampire',
+    'werewolf',
+    'zombie',
+    'troll',
+    'ogre',
+    'goblin',
+    'blob'
+  )
+
+  def name(self):
+    self.KINDS[self.index]
+
+  def __str__(self):
+    self.name
+
+class Element(FibonacciMixin):
+  KINDS = (
+    ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
+    ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
+    ('cheese','on the moon','cheddar','Ur','meteor','moon','Aliens'),
+    ('clouds','in the sky','fog','Lucy','diamond','sky','Hippies'),
+    ('fire','on a volcano','magma','Ifrit','ruby','volcano','Firemen'),
+    ('waves','at sea','aguaga','Poseidon','water','sea','Pirates'),
+    ('flowers','in a poppy field','sleep','Elphaba','emerald','fields','Lollipops'),
+    ('sand','in the desert','sandstorm','Ra','amber','desert','Fremen'),
+    ('ice','in the arctic','ice','Shiva','ice','arctic','Vikings'),
+    ('rocks','in the mountains','quake','Buddha','stone','mountains','Masons'),
+    ('mud','in a swamp','muck','Yoda','lucasite','swamp','Lizardmen'),
+    ('darkness','underground','hole','Hades','black','caverns','Morlocks'),
+    ('trees','in the forest','leaf','Treebush','wood','forest','Hoods'),
+    ('grass','on the prairie','mow','Laura','glass','prairie','Barbarians')
+  )
+
+  def name(self):
+    self.KINDS[self.index][0]
+
+  def __str__(self):
+    self.name
+
+  def terrain(self):
+    self.KINDS[self.index][1]
+
+  def spell(self):
+    self.KINDS[self.index][2]
+
+  def god(self):
+    self.KINDS[self.index][3]
+
+  def gem(self):
+    self.KINDS[self.index][4]
+
+  def mapname(self):
+    self.KINDS[self.index][5]
+
+  def guild(self):
+    self.KINDS[self.index][6]
+
+@dataclass
+class Monster:
+  gold: int
+  kind_number: int
+  strength_number: int
+  weakness_number: int
+  attack_number: int
+
+  def kind(self):
+    MonsterKind(self.kind_number)
 
 @dataclass
 class Day:
