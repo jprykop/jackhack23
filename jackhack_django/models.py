@@ -33,7 +33,10 @@ class SaveDay(jackhack.game.Day, models.Model):
   game = models.ForeignKey(SaveGame, on_delete=models.CASCADE)
   daynum = models.IntegerField(choices=[(x,x) for x in range(1,101)])
   town_gold = models.IntegerField(blank=True, null=True)
+  town_gold_acquired = models.IntegerField(blank=True, null=True)
   monster_gold = models.IntegerField(blank=True, null=True)
+  monster_gold_acquired = models.IntegerField(blank=True, null=True)
+  gold_spent = models.IntegerField(blank=True, null=True)
   played = models.BooleanField(default=False)
 
   def __init__(self, *args, **kwargs):

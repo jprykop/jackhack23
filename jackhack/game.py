@@ -1,18 +1,20 @@
 import random
+from dataclasses import dataclass
 
 class InvalidMove(Exception):
   pass
 
+@dataclass
 class Day:
-  MAX_DAYS = 100
+  daynum: int
+  town_gold: int = None
+  town_gold_acquired: int = None
+  monster_gold: int = None
+  monster_gold_acquired: int = None
+  gold_spent: int = None
+  played: bool = False
 
-  def __init__(self, *, daynum, town_gold=None, monster_gold=None, played=False):
-    if daynum < 1 or daynum > self.MAX_DAYS:
-      raise IndexError
-    self.daynum = daynum
-    self.town_gold = town_gold
-    self.monster_gold = monster_gold
-    self.played = played
+  MAX_DAYS = 100
 
   def to_dict(self):
     return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
@@ -58,3 +60,16 @@ class Game:
 
   def current_day(self):
     return next((day for day in self.days() if not day.played), None)
+
+  def gold(self):
+    town_gold_acquired = sum([d.town_gold_acquired for d in self.days() if d.town_gold_acquired]) or 0
+    monster_gold_acquired = sum([d.monster_gold_acquired for d in self.days() if d.monster_gold_acquired]) or 0
+    gold_spent = sum([-d.gold_spent for d in self.days() if d.gold_spent]) or 0
+    return town_gold_acquired + monster_gold_acquired + gold_spent
+
+  def play(self):
+    today = self.current_day()
+    if today.town_gold is not None:
+      self.gold += today.town_gold
+    if today.monster_gold is not None:
+      self.gold += today.monster_gold

@@ -142,3 +142,6 @@ class GameTestCase(unittest.TestCase):
     today = game.current_day()
     expected_day = self.EXPECTED_DAYS[9]
     self.assertEqual(today.to_dict(), expected_day)
+
+  def test_start_with_zero_gold(self):
+    self.assertEqual(self.started_game().gold(), 0)
