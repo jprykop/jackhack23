@@ -160,12 +160,36 @@ class GameTestCase(unittest.TestCase):
     self.assertEqual(day.monster_gold_acquired, 16)
     self.assertEqual(game.gold(), 16)
 
+  def test_spend_gold(self):
+    game = self.started_game()
+    day = game.day(17)
+    day.acquire_town_gold()
+    self.assertEqual(game.gold(), 15)
+    day.spend_gold(5)
+    self.assertEqual(day.gold_spent, 5)
+    self.assertEqual(game.gold(), 10)
+
   def test_gold(self):
     game = self.started_game()
     tg = False
     mg = False
+    sg = False
+    expected_gold = 0
     for daynum in range(1,100):
       day = game.day(daynum)
+      if tg and day.town_gold:
+        expected_gold += self.EXPECTED_DAYS[daynum - 1]["town_gold"]
+        day.acquire_town_gold()
+      if mg and day.monster_gold:
+        expected_gold += self.EXPECTED_DAYS[daynum - 1]["monster_gold"]
+        day.acquire_monster_gold()
+      if sg:
+        spent_gold = int(daynum / 2)
+        day.spend_gold(spent_gold)
+        expected_gold -= int(spent_gold)
+        sg = False
+      else:
+        sg = True
       if tg and mg: # both true, go to only mg true
         tg = False
       elif mg:      # only mg true, go to both false
@@ -174,3 +198,4 @@ class GameTestCase(unittest.TestCase):
         mg = True
       else:         # both false, go to only tg true
         tg = True
+    self.assertEqual(game.gold(), expected_gold) # 151
