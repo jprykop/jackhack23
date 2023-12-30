@@ -14,6 +14,9 @@ class Day:
     self.monster_gold = monster_gold
     self.played = played
 
+  def to_dict(self):
+    return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
+
 class Game:
   # methods to override for django version
 
@@ -26,6 +29,9 @@ class Game:
 
   def days(self):
     return self._days
+
+  def _save_game(self):
+    pass
 
   # should not need to override for django version
 
@@ -47,10 +53,8 @@ class Game:
       'monster_gold': Day.MAX_DAYS
     })
 
-  def current_day(self):
-    next((day for day in self.days() if not day.played), None)
-
   def day(self, daynum):
-    self._get_day(self, daynum)
+    return self.days()[daynum - 1]
 
-
+  def current_day(self):
+    return next((day for day in self.days() if not day.played), None)

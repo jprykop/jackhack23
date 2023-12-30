@@ -13,12 +13,21 @@ class SaveGame(jackhack.game.Game, models.Model):
 
   def __init__(self, *args, **kwargs):
     models.Model.__init__(self, *args, **kwargs)
+    self._days = None
 
   def _add_day(self, attributes):
     SaveDay.objects.create(game=self, **attributes)
+    self._days = None
 
   def days(self):
-    return self.saveday_set.all()
+    if self._days is None:
+      self._days = list(self.saveday_set.all())
+    return self._days
+
+  def _save_game(self):
+    self.save()
+    for day in self.days():
+      day.save()
 
 class SaveDay(jackhack.game.Day, models.Model):
   game = models.ForeignKey(SaveGame, on_delete=models.CASCADE)
