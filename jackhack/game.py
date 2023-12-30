@@ -1,5 +1,5 @@
 import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 class InvalidMove(Exception):
   pass
@@ -19,12 +19,11 @@ class Day:
   def to_dict(self):
     return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
 
+@dataclass
 class Game:
-  # methods to override for django version
-
-  def __init__(self, *, player_name):
-    self.player_name = player_name
-    self._days = []
+  # methods to override for django version (including __init__)
+  player_name: str
+  _days: list = field(default_factory=list)
 
   def _add_day(self, attributes):
     self._days.append(Day(**attributes))
