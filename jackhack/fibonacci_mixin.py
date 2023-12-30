@@ -3,6 +3,8 @@ import random
 class FibonacciMixin:
   """Mixin for weighting objects using the fibonacci sequence"""
 
+  MAX = None
+
   @classmethod
   def from_value_floor(cls, value):
     """Return an object for the maximum number with a value no greater than the given value"""
@@ -30,13 +32,17 @@ class FibonacciMixin:
     return cls(number)
 
   @classmethod
-  def random(cls, max):
+  def random(cls, max = None):
     """Return an object for a random number between 1 and max, weighted by values, with lower numbers the rarest"""
+    if max is None:
+      max = cls.MAX
     return cls.from_value_ceiling(random.randint(1, FibonacciMixin(max).value))
 
   @classmethod
-  def reverse_random(cls, max):
+  def reverse_random(cls, max = None):
     """Return an object for a random number between 1 and max, weighted by values, with higher numbers the rarest"""
+    if max is None:
+      max = cls.MAX
     return cls(max + 1 - FibonacciMixin.random(max).number)
 
   def __init__(self,number):

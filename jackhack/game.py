@@ -23,6 +23,8 @@ class MonsterKind(FibonacciMixin):
     'blob'
   )
 
+  MAX = len(KINDS)
+
   def name(self):
     self.KINDS[self.index]
 
@@ -46,6 +48,8 @@ class Element(FibonacciMixin):
     ('trees','in the forest','leaf','Treebush','wood','forest','Hoods'),
     ('grass','on the prairie','mow','Laura','glass','prairie','Barbarians')
   )
+
+  MAX = len(KINDS)
 
   def name(self):
     self.KINDS[self.index][0]
@@ -77,10 +81,15 @@ class Monster:
   kind_number: int
   strength_number: int
   weakness_number: int
-  attack_number: int
 
   def kind(self):
     MonsterKind(self.kind_number)
+
+  def strength(self):
+    Element(self.strength_number)
+
+  def weakness(self):
+    Element(self.weakness_number)
 
 @dataclass
 class Day:
@@ -90,6 +99,13 @@ class Day:
   monster_gold: int = None
   monster_gold_acquired: int = None
   gold_spent: int = None
+  terrain_number: int = None
+  monster_kind_number: int = None
+  monster_strength_number: int = None
+  monster_weakness_number: int = None
+  job_played: str = ''
+  job_item_acquired: bool = None
+  job_xp_acquired: int = None
   played: bool = False
 
   MAX_DAYS = 100
@@ -126,11 +142,17 @@ class Game:
   # should not need to override for django version
 
   def _generate_day(self, daynum, dayclass=Day):
-    self._add_day({
+    attributes = {
       'daynum': daynum,
+      'terrain_number': Element.random().number,
       'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
       'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
-    })
+    }
+    if attributes['monster_gold']:
+      attributes['monster_kind_number'] = MonsterKind.random().number
+      attributes['monster_strength_number'] = MonsterKind.reverse_random().number
+      attributes['monster_weakness_number'] = MonsterKind.reverse_random().number
+    self._add_day(attributes)
 
   def start(self):
     if self.days():
