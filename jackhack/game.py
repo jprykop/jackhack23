@@ -121,6 +121,13 @@ class Day:
       self.gold_spent = 0
     self.gold_spent += amount
 
+  def net_gold(self):
+    net = 0
+    net += self.town_gold_acquired if self.town_gold_acquired else 0
+    net += self.monster_gold_acquired if self.monster_gold_acquired else 0
+    net -= self.gold_spent if self.gold_spent else 0
+    return net
+
   def to_dict(self):
     return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
 
@@ -172,10 +179,7 @@ class Game:
     return next((day for day in self.days() if not day.played), None)
 
   def gold(self):
-    town_gold_acquired = sum([d.town_gold_acquired for d in self.days() if d.town_gold_acquired]) or 0
-    monster_gold_acquired = sum([d.monster_gold_acquired for d in self.days() if d.monster_gold_acquired]) or 0
-    gold_spent = sum([-d.gold_spent for d in self.days() if d.gold_spent]) or 0
-    return town_gold_acquired + monster_gold_acquired + gold_spent
+    return sum([d.net_gold() for d in self.days()])
 
   def play(self):
     today = self.current_day()
