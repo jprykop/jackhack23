@@ -1,11 +1,11 @@
 import random
 from dataclasses import dataclass, field
-from jackhack.fibonacci_mixin import FibonacciMixin
+from jackhack.fibonacci_number import FibonacciNumber
 
 class InvalidMove(Exception):
   pass
 
-class MonsterKind(FibonacciMixin):
+class MonsterKind(FibonacciNumber):
   KINDS = (
     'yeti',
     'dinosaur',
@@ -31,7 +31,7 @@ class MonsterKind(FibonacciMixin):
   def __str__(self):
     self.name
 
-class Element(FibonacciMixin):
+class Element(FibonacciNumber):
   KINDS = (
     ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
     ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
