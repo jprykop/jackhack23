@@ -93,6 +93,7 @@ class Monster:
 
 @dataclass
 class Day:
+  # only need to override these properties via __init__ in django version
   daynum: int
   town_gold: int = None
   town_gold_acquired: int = None
@@ -138,7 +139,7 @@ class Day:
 
 @dataclass
 class Game:
-  # methods to override for django version (including __init__)
+  # things to override for django version (including __init__)
   player_name: str
   _days: list = field(default_factory=list)
 
