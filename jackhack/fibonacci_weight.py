@@ -66,6 +66,9 @@ class FibonacciWeight:
       weight += i
     object.__setattr__(self, 'weight', weight)
 
+  def __int__(self):
+    return self.number
+
   def __eq__(self, other):
     if hasattr(other, 'number'):
       other = other.number

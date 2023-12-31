@@ -111,6 +111,15 @@ class FibonacciWeightTestCase(unittest.TestCase):
     two = FibonacciWeight(3)
     self.assertIsNot(one, two)
     self.assertEqual(one, two)
+    self.assertEqual(one, 3)
+
+  def test_int(self):
+    one = FibonacciWeight(3)
+    self.assertIsNot(one, 3)
+    self.assertIs(int(one),3)
+
+  def test_hash(self):
+    self.assertEqual(set([1,2]), set([FibonacciWeight(1), FibonacciWeight(2)]))
 
 if __name__ == '__main__':
     unittest.main()
