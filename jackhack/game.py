@@ -106,7 +106,6 @@ class Day:
   monster_weakness_number: int = None
   job_played: str = ''
   job_item_acquired: bool = None
-  job_xp_acquired: int = None
   played: bool = False
 
   MAX_DAYS = 100

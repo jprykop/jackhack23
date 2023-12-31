@@ -42,7 +42,6 @@ class SaveDay(Day, models.Model):
   monster_weakness_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Element.MAX + 1)])
   job_played = models.CharField(max_length=16, blank=True)
   job_item_acquired = models.BooleanField(blank=True, null=True)
-  job_xp_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1,101)])
   played = models.BooleanField(default=False)
 
   def __init__(self, *args, **kwargs):
