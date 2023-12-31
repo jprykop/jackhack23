@@ -137,6 +137,18 @@ class GameTestCase(unittest.TestCase):
     self.assertEqual(game.level('warrior'), 25)
     self.assertEqual(game.level('wizard'), 25)
 
+  def test_items(self):
+    game = self.started_game()
+    job = 'warrior'
+    for daynum in range(1,13):
+      day = game.day(daynum)
+      day.played = True
+      day.job_played = job
+      day.job_item_acquired = (daynum % 3 == 1)
+      job = 'wizard' if job == 'warrior' else 'warrior'
+    self.assertEqual(game.items('warrior'), set([6,14]))
+    self.assertEqual(game.items('wizard'), set([11]))
+
   # see test_start if you need to regenerate this
   EXPECTED_DAYS = [
     {'daynum': 1, 'town_gold': 1, 'town_gold_acquired': None, 'monster_gold': None, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 6, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'played': False},
@@ -238,5 +250,5 @@ class GameTestCase(unittest.TestCase):
     {'daynum': 97, 'town_gold': None, 'town_gold_acquired': None, 'monster_gold': 41, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 14, 'monster_kind_number': 9, 'monster_strength_number': 10, 'monster_weakness_number': 2, 'job_played': '', 'job_item_acquired': None, 'played': False},
     {'daynum': 98, 'town_gold': None, 'town_gold_acquired': None, 'monster_gold': 17, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 11, 'monster_kind_number': 7, 'monster_strength_number': 9, 'monster_weakness_number': 3, 'job_played': '', 'job_item_acquired': None, 'played': False},
     {'daynum': 99, 'town_gold': None, 'town_gold_acquired': None, 'monster_gold': None, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 14, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'played': False},
-    {'daynum': 100, 'town_gold': 100, 'town_gold_acquired': None, 'monster_gold': 100, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': None, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'played': False}
+    {'daynum': 100, 'town_gold': 100, 'town_gold_acquired': None, 'monster_gold': 100, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 1, 'monster_kind_number': None, 'monster_strength_number': 1, 'monster_weakness_number': 2, 'job_played': '', 'job_item_acquired': None, 'played': False}
   ]

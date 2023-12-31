@@ -184,8 +184,11 @@ class Game:
       self._generate_day(daynum)
     self._add_day({
       'daynum': Day.MAX_DAYS,
+      'terrain_number': 1,
       'town_gold': Day.MAX_DAYS,
-      'monster_gold': Day.MAX_DAYS
+      'monster_gold': Day.MAX_DAYS,
+      'monster_strength_number': 1,
+      'monster_weakness_number': 2
     })
 
   def day(self, daynum):
@@ -207,6 +210,9 @@ class Game:
       return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
     return sum([self.level(job) for job in self.JOBS])
 
+  def items(self, job):
+    return set([day.terrain_number for day in self.days() if day.job_played == job and day.job_item_acquired])
+
   def play(self, job=None):
     day = self.current_day()
     if day.is_last_day:
@@ -217,6 +223,24 @@ class Game:
       raise InvalidMove("Unknown job")
     else:
       self.JOBS[job](self, day)
+
+  def warrior_odds(self, day):
+    pass
+
+  def cleric_odds(self, day):
+    pass
+
+  def thief_odds(self, day):
+    pass
+
+  def wizard_odds(self, day):
+    pass
+
+  def ranger_odds(self, day):
+    pass
+
+  def final_boss_odds(self, day):
+    pass
 
   def warrior(self, day):
     pass
