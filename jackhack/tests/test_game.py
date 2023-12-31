@@ -4,6 +4,127 @@ import jackhack.game as jh
 from dataclasses import asdict
 
 class GameTestCase(unittest.TestCase):
+
+  @classmethod
+  def game(cls):
+    return jh.Game(player_name='Jack')
+
+  @classmethod
+  def started_game(cls):
+    random.seed(1)
+    game = cls.game()
+    game.start()
+    return game
+
+  @classmethod
+  def days_to_dicts(cls, game):
+    return [asdict(day) for day in game.days()]
+
+  def test_player_name(self):
+    self.assertEqual(self.game().player_name, "Jack")
+
+  def test_start(self):
+    actual_days = self.days_to_dicts(self.started_game())
+    ### Uncomment below when you need to regenerate EXPECTED_DAYS
+    #for day in actual_days:
+    #  print(f"{day},")
+    self.assertEqual(actual_days, GameTestCase.EXPECTED_DAYS)
+
+  def test_day(self):
+    game = self.started_game()
+    day = game.day(57)
+    expected_day = self.EXPECTED_DAYS[56]
+    self.assertEqual(asdict(day), expected_day)
+
+  def test_current_day(self):
+    game = self.started_game()
+    for daynum in range(1,10):
+      day = game.day(daynum)
+      day.played = True
+    today = game.current_day()
+    expected_day = self.EXPECTED_DAYS[9]
+    self.assertEqual(asdict(today), expected_day)
+
+  def test_start_with_zero_gold(self):
+    self.assertEqual(self.started_game().gold(), 0)
+
+  def test_acquire_town_gold(self):
+    game = self.started_game()
+    day = game.day(6)
+    day.acquire_town_gold()
+    self.assertEqual(day.town_gold_acquired, 4)
+    self.assertEqual(game.gold(), 4)
+
+  def test_acquire_monster_gold(self):
+    game = self.started_game()
+    day = game.day(35)
+    day.acquire_monster_gold()
+    self.assertEqual(day.monster_gold_acquired, 31)
+    self.assertEqual(game.gold(), 31)
+
+  def test_spend_gold(self):
+    game = self.started_game()
+    day = game.day(18)
+    day.acquire_town_gold()
+    self.assertEqual(game.gold(), 16)
+    day.spend_gold(5)
+    self.assertEqual(day.gold_spent, 5)
+    self.assertEqual(game.gold(), 11)
+
+  def test_gold(self):
+    game = self.started_game()
+    tg = False
+    mg = False
+    sg = 1
+    expected_gold = 0
+    for daynum in range(1,100):
+      day = game.day(daynum)
+      if tg and day.town_gold:
+        expected_gold += self.EXPECTED_DAYS[daynum - 1]["town_gold"]
+        day.acquire_town_gold()
+      if mg and day.monster_gold:
+        expected_gold += self.EXPECTED_DAYS[daynum - 1]["monster_gold"]
+        day.acquire_monster_gold()
+      if sg == 4:
+        spent_gold = int(daynum / 4)
+        day.spend_gold(spent_gold)
+        expected_gold -= int(spent_gold)
+        sg = 1
+      else:
+        sg += 1
+      if tg and mg: # both true, go to only mg true
+        tg = False
+      elif mg:      # only mg true, go to both false
+        mg = False
+      elif tg:      # only tg true, go to both true
+        mg = True
+      else:         # both false, go to only tg true
+        tg = True
+    # a dynamic test, in case we make changes to started_game, this should at least still pass
+    self.assertEqual(game.gold(), expected_gold)
+    # hard-coded value, for when we make changes that shouldn't change this value
+    self.assertEqual(game.gold(), 811)
+
+  def test_xp(self):
+    game = self.started_game()
+    job = 'warrior'
+    for daynum in range(1,41):
+      day = game.day(daynum)
+      day.played = True
+      day.job_played = job
+      job = 'wizard' if job == 'warrior' else 'warrior'
+    self.assertEqual(game.day(1).net_xp(), 1)   # town no monster, same as daynum
+    self.assertEqual(game.day(3).net_xp(), 1)   # town no monster, less than daynum
+    self.assertEqual(game.day(5).net_xp(), 5)   # no town or monster
+    self.assertEqual(game.day(9).net_xp(), 9)   # monster no town, same as daynum
+    self.assertEqual(game.day(28).net_xp(), 27) # town and monster, less than daynum
+    self.assertEqual(game.day(35).net_xp(), 59) # town and monster, greater than daynum
+    self.assertEqual(game.day(40).net_xp(), 15) # monster no town, less than daynum
+    self.assertEqual(game.day(41).net_xp(), 0)  # not yet played
+    self.assertEqual(game.xp(), 625)
+    self.assertEqual(game.xp('warrior'), 313)
+    self.assertEqual(game.xp('wizard'), 312)
+
   # see test_start if you need to regenerate this
   EXPECTED_DAYS = [
     {'daynum': 1, 'town_gold': 1, 'town_gold_acquired': None, 'monster_gold': None, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 6, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'job_xp_acquired': None, 'played': False},
@@ -107,104 +228,3 @@ class GameTestCase(unittest.TestCase):
     {'daynum': 99, 'town_gold': None, 'town_gold_acquired': None, 'monster_gold': None, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 14, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'job_xp_acquired': None, 'played': False},
     {'daynum': 100, 'town_gold': 100, 'town_gold_acquired': None, 'monster_gold': 100, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': None, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'job_xp_acquired': None, 'played': False}
   ]
-
-  @classmethod
-  def game(cls):
-    return jh.Game(player_name='Jack')
-  
-  @classmethod
-  def started_game(cls):
-    random.seed(1)
-    game = cls.game()
-    game.start()
-    return game
-
-  @classmethod
-  def days_to_dicts(cls, game):
-    return [asdict(day) for day in game.days()]
-
-  def test_player_name(self):
-    self.assertEqual(self.game().player_name, "Jack")
-
-  def test_start(self):
-    actual_days = self.days_to_dicts(self.started_game())
-    ### Uncomment below when you need to regenerate EXPECTED_DAYS
-    #for day in actual_days:
-    #  print(f"{day},")
-    self.assertEqual(actual_days, GameTestCase.EXPECTED_DAYS)
-
-  def test_day(self):
-    game = self.started_game()
-    day = game.day(57)
-    expected_day = self.EXPECTED_DAYS[56]
-    self.assertEqual(asdict(day), expected_day)
-
-  def test_current_day(self):
-    game = self.started_game()
-    for daynum in range(1,10):
-      day = game.day(daynum)
-      day.played = True
-    game._save_game()
-    today = game.current_day()
-    expected_day = self.EXPECTED_DAYS[9]
-    self.assertEqual(asdict(today), expected_day)
-
-  def test_start_with_zero_gold(self):
-    self.assertEqual(self.started_game().gold(), 0)
-
-  def test_acquire_town_gold(self):
-    game = self.started_game()
-    day = game.day(6)
-    day.acquire_town_gold()
-    self.assertEqual(day.town_gold_acquired, 4)
-    self.assertEqual(game.gold(), 4)
-
-  def test_acquire_monster_gold(self):
-    game = self.started_game()
-    day = game.day(35)
-    day.acquire_monster_gold()
-    self.assertEqual(day.monster_gold_acquired, 31)
-    self.assertEqual(game.gold(), 31)
-
-  def test_spend_gold(self):
-    game = self.started_game()
-    day = game.day(18)
-    day.acquire_town_gold()
-    self.assertEqual(game.gold(), 16)
-    day.spend_gold(5)
-    self.assertEqual(day.gold_spent, 5)
-    self.assertEqual(game.gold(), 11)
-
-  def test_gold(self):
-    game = self.started_game()
-    tg = False
-    mg = False
-    sg = 1
-    expected_gold = 0
-    for daynum in range(1,100):
-      day = game.day(daynum)
-      if tg and day.town_gold:
-        expected_gold += self.EXPECTED_DAYS[daynum - 1]["town_gold"]
-        day.acquire_town_gold()
-      if mg and day.monster_gold:
-        expected_gold += self.EXPECTED_DAYS[daynum - 1]["monster_gold"]
-        day.acquire_monster_gold()
-      if sg == 4:
-        spent_gold = int(daynum / 4)
-        day.spend_gold(spent_gold)
-        expected_gold -= int(spent_gold)
-        sg = 1
-      else:
-        sg += 1
-      if tg and mg: # both true, go to only mg true
-        tg = False
-      elif mg:      # only mg true, go to both false
-        mg = False
-      elif tg:      # only tg true, go to both true
-        mg = True
-      else:         # both false, go to only tg true
-        tg = True
-    # a dynamic test, in case we make changes to started_game, this should at least still pass
-    self.assertEqual(game.gold(), expected_gold)
-    # hard-coded value, for when we make changes that shouldn't change this value
-    self.assertEqual(game.gold(), 811)

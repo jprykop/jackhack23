@@ -124,9 +124,17 @@ class Day:
 
   def net_gold(self):
     net = 0
-    net += self.town_gold_acquired if self.town_gold_acquired else 0
-    net += self.monster_gold_acquired if self.monster_gold_acquired else 0
-    net -= self.gold_spent if self.gold_spent else 0
+    if self.town_gold_acquired: net += self.town_gold_acquired
+    if self.monster_gold_acquired: net += self.monster_gold_acquired
+    if self.gold_spent: net -= self.gold_spent
+    return net
+
+  def net_xp(self):
+    net = 0
+    if self.played:
+      if self.town_gold: net += self.town_gold
+      if self.monster_gold: net += self.monster_gold
+      if not net: net = self.daynum
     return net
 
   def monster(self):
@@ -185,7 +193,11 @@ class Game:
     return next((day for day in self.days() if not day.played), None)
 
   def gold(self):
-    return sum([d.net_gold() for d in self.days()])
+    return sum([day.net_gold() for day in self.days()])
+
+  def xp(self, job=None):
+    check_job = lambda day : (day.played and job == day.job_played) if job else day.played
+    return sum([day.net_xp() if check_job(day) else 0 for day in self.days()])
 
   def play(self):
     today = self.current_day()
@@ -193,3 +205,26 @@ class Game:
       self.gold += today.town_gold
     if today.monster_gold is not None:
       self.gold += today.monster_gold
+
+  def warrior(self, day):
+    pass
+
+  def healer(self, day):
+    pass
+
+  def thief(self, day):
+    pass
+
+  def wizard(self, day):
+    pass
+
+  def ranger(self, day):
+    pass
+
+  JOBS = {
+    'warrior': warrior,
+    'healer': healer,
+    'thief': thief,
+    'wizard': wizard,
+    'ranger': ranger
+  }
