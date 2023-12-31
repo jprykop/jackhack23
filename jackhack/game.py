@@ -36,17 +36,17 @@ class Element(FibonacciMixin):
     ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
     ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
     ('cheese','on the moon','cheddar','Ur','meteor','moon','Aliens'),
-    ('clouds','in the sky','fog','Lucy','diamond','sky','Hippies'),
+    ('air','in the sky','fog','Lucy','diamond','sky','Hippies'),
     ('fire','on a volcano','magma','Ifrit','ruby','volcano','Firemen'),
-    ('waves','at sea','aguaga','Poseidon','water','sea','Pirates'),
-    ('flowers','in a poppy field','sleep','Elphaba','emerald','fields','Lollipops'),
-    ('sand','in the desert','sandstorm','Ra','amber','desert','Fremen'),
+    ('fairy','in a poppy field','sleep','Elphaba','emerald','fields','Lollipops'),
     ('ice','in the arctic','ice','Shiva','ice','arctic','Vikings'),
-    ('rocks','in the mountains','quake','Buddha','stone','mountains','Masons'),
+    ('water','at sea','aguaga','Poseidon','water','sea','Pirates'),
+    ('sand','in the desert','sandstorm','Ra','amber','desert','Fremen'),
+    ('rock','in the mountains','quake','Buddha','stone','mountains','Masons'),
     ('mud','in a swamp','muck','Yoda','lucasite','swamp','Lizardmen'),
-    ('darkness','underground','hole','Hades','black','caverns','Morlocks'),
-    ('trees','in the forest','leaf','Treebush','wood','forest','Hoods'),
-    ('grass','on the prairie','mow','Laura','glass','prairie','Barbarians')
+    ('dark','in a cave','hole','Hades','black','caverns','Morlocks'),
+    ('wood','in the forest','leaf','Treebush','wood','forest','Hoods'),
+    ('grass','on the prairie','mow','Laura','grass','prairie','Barbarians')
   )
 
   MAX = len(KINDS)
@@ -128,8 +128,13 @@ class Day:
     net -= self.gold_spent if self.gold_spent else 0
     return net
 
-  def to_dict(self):
-    return {'daynum': self.daynum, 'town_gold': self.town_gold, 'monster_gold': self.monster_gold, 'played': self.played }
+  def monster(self):
+    return Monster(
+      gold=self.monster_gold,
+      kind_number=self.monster_kind_number,
+      strength_number=self.monster_strength_number,
+      weakness_number=self.monster_weakness_number
+    ) if self.monster_gold else None
 
 @dataclass
 class Game:
