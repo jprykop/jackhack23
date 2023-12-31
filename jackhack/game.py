@@ -144,6 +144,9 @@ class Day:
       weakness_number=self.monster_weakness_number
     ) if self.monster_gold else None
 
+  def is_last_day(self):
+    return self.daynum == self.MAX_DAYS
+
 @dataclass
 class Game:
   # things to override for django version (including __init__)
@@ -204,17 +207,21 @@ class Game:
       return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
     return sum([self.level(job) for job in self.JOBS])
 
-  def play(self):
-    today = self.current_day()
-    if today.town_gold is not None:
-      self.gold += today.town_gold
-    if today.monster_gold is not None:
-      self.gold += today.monster_gold
+  def play(self, job=None):
+    day = self.current_day()
+    if day.is_last_day:
+      self.final_boss(day)
+    elif not job:
+      raise InvalidMove("No job specified")
+    elif job not in self.JOBS:
+      raise InvalidMove("Unknown job")
+    else:
+      self.JOBS[job](self, day)
 
   def warrior(self, day):
     pass
 
-  def healer(self, day):
+  def cleric(self, day):
     pass
 
   def thief(self, day):
@@ -226,9 +233,12 @@ class Game:
   def ranger(self, day):
     pass
 
+  def final_boss(self, day):
+    pass
+
   JOBS = {
     'warrior': warrior,
-    'healer': healer,
+    'cleric': cleric,
     'thief': thief,
     'wizard': wizard,
     'ranger': ranger
