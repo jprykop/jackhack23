@@ -144,6 +144,9 @@ class Day:
       weakness_number=self.monster_weakness_number
     ) if self.monster_gold else None
 
+  def terrain(self):
+    return Element(self.terrain_number)
+
   def is_last_day(self):
     return self.daynum == self.MAX_DAYS
 
@@ -211,7 +214,7 @@ class Game:
     return sum([self.level(job) for job in self.JOBS])
 
   def items(self, job):
-    return set([day.terrain_number for day in self.days() if day.job_played == job and day.job_item_acquired])
+    return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])
 
   def play(self, job=None):
     day = self.current_day()
@@ -224,23 +227,77 @@ class Game:
     else:
       self.JOBS[job](self, day)
 
-  def warrior_odds(self, day):
-    pass
+  def _monster_odds(self, day, job_level, monster_level=None):
+    monster = day.monster
+    if not monster:
+      raise InvalidMove("No monster odds without monster")
+    monster_level = monster_level or monster.gold
+    if day.terrain() == monster.strength():
+      monster_level = monster_level * 2
+    if day.terrain() == monster.weakness():
+      job_level = job_level * 2
+    return (job_level, monster_level)
 
-  def cleric_odds(self, day):
-    pass
+  def _warrior_odds(self, day, job_level=None, monster_level=None):
+    job = 'warrior'
+    monster = day.monster
+    if not monster:
+      raise InvalidMove("No warrior odds without monster")
+    job_level = job_level or self.level(job)
+    monster_level = monster_level or monster.gold
+    if monster.strength() in self.items(job):
+      job_level = job_level * 2
+    return (job_level, monster_level)
 
-  def thief_odds(self, day):
-    pass
+  def _cleric_odds(self, day, job_level=None, target_level=None):
+    job = 'cleric'
+    job_level = job_level or self.level(job)
+    if not target_level: target_level = day.town_gold or day.daynum
+    if day.terrain() in self.items(job):
+      job_level = job_level * 2
+    return (job_level, target_level)
 
-  def wizard_odds(self, day):
-    pass
+  def _thief_odds(self, day, job_level=None, town_level=None):
+    job = 'thief'
+    if not day.town_gold:
+      raise InvalidMove("No thief odds without town")
+    job_level = job_level or self.level(job)
+    if not town_level: town_level = day.town_gold
+    if day.terrain() in self.items(job):
+      town_level = town_level * 2 # it's a weakness
+    return (job_level, town_level)
 
-  def ranger_odds(self, day):
-    pass
+  def _wizard_odds(self, day, job_level=None, monster_level=None):
+    job = 'warrior'
+    monster = day.monster
+    if not monster:
+      raise InvalidMove("No wizard odds without monster")
+    job_level = job_level or self.level(job)
+    monster_level = monster_level or monster.gold
+    if monster.weakness() in self.items(job):
+      job_level = job_level * 2
+    return (job_level, monster_level)
 
-  def final_boss_odds(self, day):
-    pass
+  def _ranger_odds(self, day, job_level=None, target_level=None):
+    job = 'ranger'
+    monster = day.monster
+    town_gold = day.town_gold
+    if not monster or town_gold:
+      raise InvalidMove("No ranger odds without monster or town")
+    job_level = job_level or self.level(job)
+    target_level = target_level or (monster.gold if monster else town_gold)
+    if day.terrain() in self.items(job):
+      job_level = job_level * 2
+    return (job_level, target_level)
+
+  def _final_boss_odds(self, day):
+    level = self._warrior_odds(day)[0]
+    level += self._cleric_odds(day)[0]
+    level += self._wizard_odds(day)[0]
+    level += self._ranger_odds(day)[0]
+    odds = self._monster_odds(day, level)
+    odds = self._thief_odds(day, *odds)
+    return odds
 
   def warrior(self, day):
     pass

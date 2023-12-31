@@ -1,7 +1,13 @@
 import random
+from dataclasses import dataclass, field
 
+@dataclass(frozen=True)
 class FibonacciWeight:
   """Class for weighting objects using the fibonacci sequence"""
+
+  number: int
+  index: int = field(init=False)
+  weight: int = field(init=False)
 
   # override when inheriting to provide a maximum number that can be instantiated and default for random/reverse_random
   MAX = None
@@ -50,14 +56,20 @@ class FibonacciWeight:
       raise IndexError
     return cls(max + 1 - FibonacciWeight.random(max).number)
 
-  def __init__(self,number):
+  def __post_init__(self):
+    number = self.number
     if number < 1 or (self.MAX and self.MAX < number):
       raise IndexError
-    self.number = number
-    self.index = number - 1
-    self.weight = 0
+    object.__setattr__(self, 'index', number - 1)
+    weight = 0
     for i in range(1, self.number+1):
-      self.weight += i
+      weight += i
+    object.__setattr__(self, 'weight', weight)
 
   def __eq__(self, other):
-    return self.number == other.number
+    if hasattr(other, 'number'):
+      other = other.number
+    return self.number == other
+
+  def __hash__(self):
+    return self.number
