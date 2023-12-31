@@ -125,6 +125,18 @@ class GameTestCase(unittest.TestCase):
     self.assertEqual(game.xp('warrior'), 313)
     self.assertEqual(game.xp('wizard'), 312)
 
+  def test_level(self):
+    game = self.started_game()
+    job = 'warrior'
+    for daynum in range(1,41):
+      day = game.day(daynum)
+      day.played = True
+      day.job_played = job
+      job = 'wizard' if job == 'warrior' else 'warrior'
+    self.assertEqual(game.level(), 53) # sum of levels for all classes, and other classes are at level 1
+    self.assertEqual(game.level('warrior'), 25)
+    self.assertEqual(game.level('wizard'), 25)
+
   # see test_start if you need to regenerate this
   EXPECTED_DAYS = [
     {'daynum': 1, 'town_gold': 1, 'town_gold_acquired': None, 'monster_gold': None, 'monster_gold_acquired': None, 'gold_spent': None, 'terrain_number': 6, 'monster_kind_number': None, 'monster_strength_number': None, 'monster_weakness_number': None, 'job_played': '', 'job_item_acquired': None, 'job_xp_acquired': None, 'played': False},
