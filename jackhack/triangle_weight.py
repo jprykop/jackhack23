@@ -1,10 +1,15 @@
+import math
 import random
 from dataclasses import dataclass, field
+
+def _float_from_weight(weight):
+  if weight < 1:
+    raise IndexError
+  return (math.sqrt(1 + 8 * weight) - 1) / 2
 
 @dataclass(frozen=True)
 class TriangleWeight:
   """Class for weighting integer-associated objects using their corresponding triangle numbers (sum of positive integers up to n)"""
-
   number: int
   index: int = field(init=False)
   weight: int = field(init=False)
@@ -15,28 +20,12 @@ class TriangleWeight:
   @classmethod
   def from_weight_floor(cls, weight):
     """Return an object for the maximum number with a weight no greater than the given weight"""
-    if weight < 1:
-      raise IndexError
-    number = 0
-    calc_weight = 0
-    while calc_weight + number + 1 <= weight:
-      number += 1
-      calc_weight += number
-    return cls(number)
+    return cls(int(_float_from_weight(weight)))
 
   @classmethod
   def from_weight_ceiling(cls, weight):
     """Return an object for the minimum number with a weight no less than the given weight"""
-    if weight < 1:
-      raise IndexError
-    number = 0
-    calc_weight = 0
-    while calc_weight + number + 1 <= weight:
-      number += 1
-      calc_weight += number
-    if calc_weight != weight:
-      number += 1
-    return cls(number)
+    return cls(math.ceil(_float_from_weight(weight)))
 
   @classmethod
   def random(cls, max = None):
@@ -61,9 +50,7 @@ class TriangleWeight:
     if number < 1 or (self.MAX and self.MAX < number):
       raise IndexError
     object.__setattr__(self, 'index', number - 1)
-    weight = 0
-    for i in range(1, self.number+1):
-      weight += i
+    weight = int((number * (number + 1)) / 2)
     object.__setattr__(self, 'weight', weight)
 
   def __int__(self):

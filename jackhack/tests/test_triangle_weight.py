@@ -17,23 +17,23 @@ class TriangleWeightTestCase(unittest.TestCase):
       TriangleWithMax(5)
 
   def test_weight(self):
-    self.assertEqual(TriangleWeight(1).weight, 1)
-    self.assertEqual(TriangleWeight(2).weight, 3)
-    self.assertEqual(TriangleWeight(3).weight, 6)
-    self.assertEqual(TriangleWeight(4).weight, 10)
+    self.assertIs(TriangleWeight(1).weight, 1)
+    self.assertIs(TriangleWeight(2).weight, 3)
+    self.assertIs(TriangleWeight(3).weight, 6)
+    self.assertIs(TriangleWeight(4).weight, 10)
 
   def test_from_weight_floor(self):
-    self.assertEqual(TriangleWeight.from_weight_floor(1).number, 1)
-    self.assertEqual(TriangleWeight.from_weight_floor(2).number, 1)
-    self.assertEqual(TriangleWeight.from_weight_floor(3).number, 2)
-    self.assertEqual(TriangleWeight.from_weight_floor(4).number, 2)
-    self.assertEqual(TriangleWeight.from_weight_floor(5).number, 2)
-    self.assertEqual(TriangleWeight.from_weight_floor(6).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_floor(7).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_floor(8).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_floor(9).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_floor(10).number, 4)
-    self.assertEqual(TriangleWithMax.from_weight_floor(14).number, 4)
+    self.assertIs(TriangleWeight.from_weight_floor(1).number, 1)
+    self.assertIs(TriangleWeight.from_weight_floor(2).number, 1)
+    self.assertIs(TriangleWeight.from_weight_floor(3).number, 2)
+    self.assertIs(TriangleWeight.from_weight_floor(4).number, 2)
+    self.assertIs(TriangleWeight.from_weight_floor(5).number, 2)
+    self.assertIs(TriangleWeight.from_weight_floor(6).number, 3)
+    self.assertIs(TriangleWeight.from_weight_floor(7).number, 3)
+    self.assertIs(TriangleWeight.from_weight_floor(8).number, 3)
+    self.assertIs(TriangleWeight.from_weight_floor(9).number, 3)
+    self.assertIs(TriangleWeight.from_weight_floor(10).number, 4)
+    self.assertIs(TriangleWithMax.from_weight_floor(14).number, 4)
     with self.assertRaises(IndexError):
       TriangleWeight.from_weight_floor(0)
     with self.assertRaises(IndexError):
@@ -42,17 +42,17 @@ class TriangleWeightTestCase(unittest.TestCase):
       TriangleWithMax.from_weight_floor(15)
 
   def test_from_weight_ceiling(self):
-    self.assertEqual(TriangleWeight.from_weight_ceiling(1).number, 1)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(2).number, 2)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(3).number, 2)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(4).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(5).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(6).number, 3)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(7).number, 4)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(8).number, 4)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(9).number, 4)
-    self.assertEqual(TriangleWeight.from_weight_ceiling(10).number, 4)
-    self.assertEqual(TriangleWithMax.from_weight_ceiling(10).number, 4)
+    self.assertIs(TriangleWeight.from_weight_ceiling(1).number, 1)
+    self.assertIs(TriangleWeight.from_weight_ceiling(2).number, 2)
+    self.assertIs(TriangleWeight.from_weight_ceiling(3).number, 2)
+    self.assertIs(TriangleWeight.from_weight_ceiling(4).number, 3)
+    self.assertIs(TriangleWeight.from_weight_ceiling(5).number, 3)
+    self.assertIs(TriangleWeight.from_weight_ceiling(6).number, 3)
+    self.assertIs(TriangleWeight.from_weight_ceiling(7).number, 4)
+    self.assertIs(TriangleWeight.from_weight_ceiling(8).number, 4)
+    self.assertIs(TriangleWeight.from_weight_ceiling(9).number, 4)
+    self.assertIs(TriangleWeight.from_weight_ceiling(10).number, 4)
+    self.assertIs(TriangleWithMax.from_weight_ceiling(10).number, 4)
     with self.assertRaises(IndexError):
       TriangleWeight.from_weight_ceiling(0)
     with self.assertRaises(IndexError):
@@ -62,18 +62,18 @@ class TriangleWeightTestCase(unittest.TestCase):
 
   def test_random(self):
     random.seed(3656) # randint(1,10) eleven times returns 1, 2, 9, 5, 3, 7, 8, 4, 10, 6, 3
-    self.assertEqual(TriangleWeight.random(4).number, 1)
-    self.assertEqual(TriangleWeight.random(4).number, 2)
-    self.assertEqual(TriangleWeight.random(4).number, 4)
-    self.assertEqual(TriangleWeight.random(4).number, 3)
-    self.assertEqual(TriangleWeight.random(4).number, 2)
-    self.assertEqual(TriangleWeight.random(4).number, 4)
-    self.assertEqual(TriangleWeight.random(4).number, 4)
+    self.assertIs(TriangleWeight.random(4).number, 1)
+    self.assertIs(TriangleWeight.random(4).number, 2)
+    self.assertIs(TriangleWeight.random(4).number, 4)
+    self.assertIs(TriangleWeight.random(4).number, 3)
+    self.assertIs(TriangleWeight.random(4).number, 2)
+    self.assertIs(TriangleWeight.random(4).number, 4)
+    self.assertIs(TriangleWeight.random(4).number, 4)
     # intentionally checking with max here to be sure ceiling vs floor yield different numbers
-    self.assertEqual(TriangleWithMax.random().number, 3)
-    self.assertEqual(TriangleWeight.random(4).number, 4)
-    self.assertEqual(TriangleWeight.random(4).number, 3)
-    self.assertEqual(TriangleWeight.random(4).number, 2)
+    self.assertIs(TriangleWithMax.random().number, 3)
+    self.assertIs(TriangleWeight.random(4).number, 4)
+    self.assertIs(TriangleWeight.random(4).number, 3)
+    self.assertIs(TriangleWeight.random(4).number, 2)
     with self.assertRaises(IndexError):
       TriangleWeight.random(0)
     with self.assertRaises(IndexError):
@@ -85,18 +85,18 @@ class TriangleWeightTestCase(unittest.TestCase):
 
   def test_reverse_random(self):
     random.seed(3656) # randint(1,10) ten times yields [1, 2, 9, 5, 3, 7, 8, 4, 10, 6]
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 4)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 3)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 1)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 2)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 3)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 1)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 4)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 2)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
     # intentionally checking with max here to be sure ceiling vs floor yield different numbers
-    self.assertEqual(TriangleWithMax.reverse_random().number, 2)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 1)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 2)
-    self.assertEqual(TriangleWeight.reverse_random(4).number, 3)
+    self.assertIs(TriangleWithMax.reverse_random().number, 2)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 2)
+    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
     with self.assertRaises(IndexError):
       TriangleWeight.reverse_random(0)
     with self.assertRaises(IndexError):
