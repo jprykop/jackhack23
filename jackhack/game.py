@@ -104,6 +104,11 @@ class Day:
   monster_kind_number: int = None
   monster_strength_number: int = None
   monster_weakness_number: int = None
+  health_lost_from_town: int = None
+  health_gained_from_town: int = None
+  health_lost_from_monster: int = None
+  health_gained_from_monster: int = None
+  health_gained_otherwise: int = None
   job_played: str = ''
   job_item_acquired: bool = None
   played: bool = False
@@ -134,6 +139,16 @@ class Day:
       if self.town_gold: net += self.town_gold
       if self.monster_gold: net += self.monster_gold
       if not net: net = self.daynum
+    return net
+
+  def net_health(self):
+    net = 0
+    if self.played:
+      if self.health_gained_from_monster: net += self.health_gained_from_monster
+      if self.health_gained_from_town: net += self.health_gained_from_town
+      if self.health_gained_otherwise: net += self.health_gained_otherwise
+      if self.health_lost_from_monster: net -= self.health_lost_from_monster
+      if self.health_lost_from_town: net -= self.health_lost_from_town
     return net
 
   def monster(self):
@@ -211,10 +226,25 @@ class Game:
     if job:
       xp = self.xp(job)
       return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
+    # TODO: make job required, this is not how we calculate aggregate final level
     return sum([self.level(job) for job in self.JOBS])
 
   def items(self, job):
     return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])
+
+  def health(self):
+    return 1 + sum([day.net_health() for day in self.days()])
+
+  def stats(self, job=None):
+    stats = {
+      'current_day': self.current_day(),
+      'gold': self.gold(),
+      'health': self.health()
+    }
+    if job:
+      stats['level'] = self.level(job)
+      stats['items'] = self.items(job)
+    return stats
 
   def play(self, job=None):
     day = self.current_day()
