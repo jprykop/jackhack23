@@ -2,6 +2,17 @@ import random
 from dataclasses import dataclass, field
 from jackhack.fibonacci_weight import FibonacciWeight
 
+# a single roll, returns a boolean
+def _swing(pc_level, target_level):
+  return random.randint(1, pc_level + target_level) <= pc_level
+
+# swings target_level times, returns the number of failures (i.e. health lost) with optional max (i.e. starting health)
+# update this to use random.binomialvariate once I upgrade to python 3.12
+def _hack(pc_level, target_level, max=None):
+  fails = sum(1 if not _swing(pc_level, target_level) else 0 for n in range(target_level))
+  if max and fails > max: fails = max
+  return fails
+
 class InvalidMove(Exception):
   pass
 
@@ -121,6 +132,9 @@ class Day:
   def acquire_monster_gold(self):
     self.monster_gold_acquired = self.monster_gold
 
+  def acquire_job_item(self):
+    self.job_item_acquired = True
+
   def spend_gold(self, amount):
     if self.gold_spent is None:
       self.gold_spent = 0
@@ -232,29 +246,22 @@ class Game:
   def health(self):
     return 1 + sum([day.net_health() for day in self.days()])
 
-  def stats(self, job=None):
-    stats = {
-      'current_day': self.current_day(),
-      'gold': self.gold(),
-      'health': self.health()
-    }
-    if job:
-      stats['level'] = self.level(job)
-      stats['items'] = self.items(job)
-    return stats
-
   def play(self, job=None):
     day = self.current_day()
-    if day.is_last_day:
-      self.final_boss(day)
+    if day.is_last_day():
+      self._final_boss()
     elif not job:
       raise InvalidMove("No job specified")
     elif job not in self.JOBS:
       raise InvalidMove("Unknown job")
     else:
-      self.JOBS[job](self, day)
+      self.JOBS[job](self)
+      day.job_played = job
+    day.played = True
+    self._save_game()
 
-  def _monster_odds(self, day, job_level, monster_level=None):
+  def _monster_odds(self, job_level, monster_level=None):
+    day = self.current_day()
     monster = day.monster
     if not monster:
       raise InvalidMove("No monster odds without monster")
@@ -265,8 +272,9 @@ class Game:
       job_level = job_level * 2
     return (job_level, monster_level)
 
-  def _warrior_odds(self, day, job_level=None, monster_level=None):
+  def _warrior_odds(self, job_level=None, monster_level=None):
     job = 'warrior'
+    day = self.current_day()
     monster = day.monster
     if not monster:
       raise InvalidMove("No warrior odds without monster")
@@ -276,16 +284,18 @@ class Game:
       job_level = job_level * 2
     return (job_level, monster_level)
 
-  def _cleric_odds(self, day, job_level=None, target_level=None):
+  def _cleric_odds(self, job_level=None, target_level=None):
     job = 'cleric'
+    day = self.current_day()
     job_level = job_level or self.level(job)
     if not target_level: target_level = day.town_gold or day.daynum
     if day.terrain() in self.items(job):
       job_level = job_level * 2
     return (job_level, target_level)
 
-  def _thief_odds(self, day, job_level=None, town_level=None):
+  def _thief_odds(self, job_level=None, town_level=None):
     job = 'thief'
+    day = self.current_day()
     if not day.town_gold:
       raise InvalidMove("No thief odds without town")
     job_level = job_level or self.level(job)
@@ -294,8 +304,9 @@ class Game:
       town_level = town_level * 2 # it's a weakness
     return (job_level, town_level)
 
-  def _wizard_odds(self, day, job_level=None, monster_level=None):
+  def _wizard_odds(self, job_level=None, monster_level=None):
     job = 'warrior'
+    day = self.current_day()
     monster = day.monster
     if not monster:
       raise InvalidMove("No wizard odds without monster")
@@ -305,8 +316,9 @@ class Game:
       job_level = job_level * 2
     return (job_level, monster_level)
 
-  def _ranger_odds(self, day, job_level=None, target_level=None):
+  def _ranger_odds(self, job_level=None, target_level=None):
     job = 'ranger'
+    day = self.current_day()
     monster = day.monster
     town_gold = day.town_gold
     if not monster or town_gold:
@@ -317,37 +329,98 @@ class Game:
       job_level = job_level * 2
     return (job_level, target_level)
 
-  def _final_boss_odds(self, day):
-    level = self._warrior_odds(day)[0]
-    level += self._cleric_odds(day)[0]
-    level += self._wizard_odds(day)[0]
-    level += self._ranger_odds(day)[0]
-    odds = self._monster_odds(day, level)
-    odds = self._thief_odds(day, *odds)
+  def _final_boss_odds(self):
+    level = self._warrior_odds()[0]
+    level += self._cleric_odds()[0]
+    level += self._wizard_odds()[0]
+    level += self._ranger_odds()[0]
+    odds = self._monster_odds(level)
+    odds = self._thief_odds(*odds)
     return odds
 
-  def warrior(self, day):
-    pass
+  def _warrior(self):
+    day = self.current_day()
+    town_gold = day.town_gold
+    monster_gold = day.monster_gold
+    if monster_gold:
+      day.health_lost_from_monster = _hack(self._monster_odds(*self._warrior_odds()), self.health())
+      if self.health() > 0:
+        day.acquire_monster_gold()
+        day.acquire_town_gold()
+      else:
+        day.health_gained_otherwise = 1
+    elif town_gold:
+      day.acquire_job_item()
 
-  def cleric(self, day):
-    pass
+  def _cleric(self):
+    day = self.current_day()
+    town_gold = day.town_gold
+    if town_gold:
+      if _swing(*self._cleric_odds()):
+        day.health_gained_from_town = town_gold
+        day.acquire_job_item()
 
-  def thief(self, day):
-    pass
+  def _thief(self):
+    day = self.current_day()
+    town_gold = day.town_gold
+    monster_gold = day.monster_gold
+    if monster_gold:
+      if _swing(self._monster_odds(self.level('thief'))):
+        day.acquire_monster_gold()
+      else:
+        day.health_lost_from_monster = min(self.health(), self.monster_gold)
+    if self.health() > 0:
+      if town_gold:
+        if _swing(self._thief_odds()):
+          day.acquire_town_gold()
+        else:
+          day.acquire_job_item() # weakness!
+    else:
+      day.health_gained_otherwise = 1
 
-  def wizard(self, day):
-    pass
+  def _wizard(self):
+    day = self.current_day()
+    town_gold = day.town_gold
+    monster_gold = day.monster_gold
+    # TODO: can only attack if health > 1
+    if monster_gold:
+      if _swing(self._monster_odds(*self._wizard_odds())):
+        day.acquire_monster_gold()
+        day.acquire_town_gold()
+      else:
+        day.health_lost_from_monster = min(self.health(), monster_gold)
+    elif town_gold:
+      day.acquire_job_item()
+    if self.health() <= 0:
+      day.health_gained_otherwise = 1
 
-  def ranger(self, day):
-    pass
+  def _ranger(self):
+    day = self.current_day()
+    town_gold = day.town_gold
+    monster_gold = day.monster_gold
+    if monster_gold:
+      if _swing(self._monster_odds(*self._ranger_odds())):
+        day.acquire_town_gold()
+        day.health_gained_from_monster = monster_gold
+    elif town_gold:
+      day.health_lost_from_town = _hack(*self._ranger_odds(), self.health())
+      if self.health() > 0:
+        day.acquire_town_gold()
+      else:
+        day.health_gained_otherwise = 1
+    else:
+      day.acquire_job_item()
 
-  def final_boss(self, day):
-    pass
+  def _final_boss(self):
+    day = self.current_day()
+    if _swing(*self._final_boss_odds()):
+      day.acquire_monster_gold()
+      day.acquire_town_gold()
 
   JOBS = {
-    'warrior': warrior,
-    'cleric': cleric,
-    'thief': thief,
-    'wizard': wizard,
-    'ranger': ranger
+    'warrior': _warrior,
+    'cleric': _cleric,
+    'thief': _thief,
+    'wizard': _wizard,
+    'ranger': _ranger
   }
