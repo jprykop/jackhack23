@@ -133,7 +133,6 @@ class GameTestCase(unittest.TestCase):
       day.played = True
       day.job_played = job
       job = 'wizard' if job == 'warrior' else 'warrior'
-    self.assertEqual(game.level(), 53) # sum of levels for all classes, and other classes are at level 1
     self.assertEqual(game.level('warrior'), 25)
     self.assertEqual(game.level('wizard'), 25)
 

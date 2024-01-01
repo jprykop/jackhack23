@@ -222,12 +222,9 @@ class Game:
     check_job = lambda day : (day.played and job == day.job_played) if job else day.played
     return sum([day.net_xp() if check_job(day) else 0 for day in self.days()])
 
-  def level(self, job=None):
-    if job:
-      xp = self.xp(job)
-      return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
-    # TODO: make job required, this is not how we calculate aggregate final level
-    return sum([self.level(job) for job in self.JOBS])
+  def level(self, job):
+    xp = self.xp(job)
+    return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
 
   def items(self, job):
     return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])
