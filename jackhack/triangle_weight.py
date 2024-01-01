@@ -2,8 +2,8 @@ import random
 from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
-class FibonacciWeight:
-  """Class for weighting objects using the fibonacci sequence"""
+class TriangleWeight:
+  """Class for weighting integer-associated objects using their corresponding triangle numbers (sum of positive integers up to n)"""
 
   number: int
   index: int = field(init=False)
@@ -45,7 +45,7 @@ class FibonacciWeight:
       max = cls.MAX
     if max < 1 or (cls.MAX and cls.MAX < max):
       raise IndexError
-    return cls.from_weight_ceiling(random.randint(1, FibonacciWeight(max).weight))
+    return cls.from_weight_ceiling(random.randint(1, TriangleWeight(max).weight))
 
   @classmethod
   def reverse_random(cls, max = None):
@@ -54,7 +54,7 @@ class FibonacciWeight:
       max = cls.MAX
     if max < 1 or (cls.MAX and cls.MAX < max):
       raise IndexError
-    return cls(max + 1 - FibonacciWeight.random(max).number)
+    return cls(max + 1 - TriangleWeight.random(max).number)
 
   def __post_init__(self):
     number = self.number

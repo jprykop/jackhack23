@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass, field
-from jackhack.fibonacci_weight import FibonacciWeight
+from jackhack.triangle_weight import TriangleWeight
 
 # a single roll, returns a boolean
 def _swing(pc_level, target_level):
@@ -16,7 +16,7 @@ def _hack(pc_level, target_level, max=None):
 class InvalidMove(Exception):
   pass
 
-class MonsterKind(FibonacciWeight):
+class MonsterKind(TriangleWeight):
   KINDS = (
     'yeti',
     'dinosaur',
@@ -42,7 +42,7 @@ class MonsterKind(FibonacciWeight):
   def __str__(self):
     self.name
 
-class Element(FibonacciWeight):
+class Element(TriangleWeight):
   KINDS = (
     ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
     ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
@@ -238,7 +238,7 @@ class Game:
 
   def level(self, job):
     xp = self.xp(job)
-    return FibonacciWeight.from_weight_floor(xp).number + 1 if xp else 1
+    return TriangleWeight.from_weight_floor(xp).number + 1 if xp else 1
 
   def items(self, job):
     return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])
