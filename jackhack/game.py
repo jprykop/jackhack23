@@ -238,7 +238,7 @@ class Game:
 
   def level(self, job):
     xp = self.xp(job)
-    return TriangleWeight.from_weight_floor(xp).number + 1 if xp else 1
+    return TriangleWeight.from_trinum_floor(xp).number + 1 if xp else 1
 
   def items(self, job):
     return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])

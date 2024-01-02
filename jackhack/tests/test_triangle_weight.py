@@ -16,49 +16,49 @@ class TriangleWeightTestCase(unittest.TestCase):
     with self.assertRaises(IndexError):
       TriangleWithMax(5)
 
-  def test_weight(self):
-    self.assertIs(TriangleWeight(1).weight, 1)
-    self.assertIs(TriangleWeight(2).weight, 3)
-    self.assertIs(TriangleWeight(3).weight, 6)
-    self.assertIs(TriangleWeight(4).weight, 10)
+  def test_trinum(self):
+    self.assertIs(TriangleWeight(1).trinum, 1)
+    self.assertIs(TriangleWeight(2).trinum, 3)
+    self.assertIs(TriangleWeight(3).trinum, 6)
+    self.assertIs(TriangleWeight(4).trinum, 10)
 
-  def test_from_weight_floor(self):
-    self.assertIs(TriangleWeight.from_weight_floor(1).number, 1)
-    self.assertIs(TriangleWeight.from_weight_floor(2).number, 1)
-    self.assertIs(TriangleWeight.from_weight_floor(3).number, 2)
-    self.assertIs(TriangleWeight.from_weight_floor(4).number, 2)
-    self.assertIs(TriangleWeight.from_weight_floor(5).number, 2)
-    self.assertIs(TriangleWeight.from_weight_floor(6).number, 3)
-    self.assertIs(TriangleWeight.from_weight_floor(7).number, 3)
-    self.assertIs(TriangleWeight.from_weight_floor(8).number, 3)
-    self.assertIs(TriangleWeight.from_weight_floor(9).number, 3)
-    self.assertIs(TriangleWeight.from_weight_floor(10).number, 4)
-    self.assertIs(TriangleWithMax.from_weight_floor(14).number, 4)
+  def test_from_trinum_floor(self):
+    self.assertIs(TriangleWeight.from_trinum_floor(1).number, 1)
+    self.assertIs(TriangleWeight.from_trinum_floor(2).number, 1)
+    self.assertIs(TriangleWeight.from_trinum_floor(3).number, 2)
+    self.assertIs(TriangleWeight.from_trinum_floor(4).number, 2)
+    self.assertIs(TriangleWeight.from_trinum_floor(5).number, 2)
+    self.assertIs(TriangleWeight.from_trinum_floor(6).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_floor(7).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_floor(8).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_floor(9).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_floor(10).number, 4)
+    self.assertIs(TriangleWithMax.from_trinum_floor(14).number, 4)
     with self.assertRaises(IndexError):
-      TriangleWeight.from_weight_floor(0)
+      TriangleWeight.from_trinum_floor(0)
     with self.assertRaises(IndexError):
-      TriangleWeight.from_weight_floor(-1)
+      TriangleWeight.from_trinum_floor(-1)
     with self.assertRaises(IndexError):
-      TriangleWithMax.from_weight_floor(15)
+      TriangleWithMax.from_trinum_floor(15)
 
-  def test_from_weight_ceiling(self):
-    self.assertIs(TriangleWeight.from_weight_ceiling(1).number, 1)
-    self.assertIs(TriangleWeight.from_weight_ceiling(2).number, 2)
-    self.assertIs(TriangleWeight.from_weight_ceiling(3).number, 2)
-    self.assertIs(TriangleWeight.from_weight_ceiling(4).number, 3)
-    self.assertIs(TriangleWeight.from_weight_ceiling(5).number, 3)
-    self.assertIs(TriangleWeight.from_weight_ceiling(6).number, 3)
-    self.assertIs(TriangleWeight.from_weight_ceiling(7).number, 4)
-    self.assertIs(TriangleWeight.from_weight_ceiling(8).number, 4)
-    self.assertIs(TriangleWeight.from_weight_ceiling(9).number, 4)
-    self.assertIs(TriangleWeight.from_weight_ceiling(10).number, 4)
-    self.assertIs(TriangleWithMax.from_weight_ceiling(10).number, 4)
+  def test_from_trinum_ceiling(self):
+    self.assertIs(TriangleWeight.from_trinum_ceiling(1).number, 1)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(2).number, 2)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(3).number, 2)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(4).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(5).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(6).number, 3)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(7).number, 4)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(8).number, 4)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(9).number, 4)
+    self.assertIs(TriangleWeight.from_trinum_ceiling(10).number, 4)
+    self.assertIs(TriangleWithMax.from_trinum_ceiling(10).number, 4)
     with self.assertRaises(IndexError):
-      TriangleWeight.from_weight_ceiling(0)
+      TriangleWeight.from_trinum_ceiling(0)
     with self.assertRaises(IndexError):
-      TriangleWeight.from_weight_ceiling(-1)
+      TriangleWeight.from_trinum_ceiling(-1)
     with self.assertRaises(IndexError):
-      TriangleWithMax.from_weight_ceiling(11)
+      TriangleWithMax.from_trinum_ceiling(11)
 
   def test_random(self):
     random.seed(3656) # randint(1,10) eleven times returns 1, 2, 9, 5, 3, 7, 8, 4, 10, 6, 3
