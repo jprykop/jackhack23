@@ -11,7 +11,7 @@ def _float_from_trinum(trinum):
 class TriangleWeight:
   """Select among integer-associated objects weighted by their values.
 
-  For instance, the random(5) method would return an object representing an
+  For instance, the trirand(5) method would return an object representing an
   integer from 1 to 5 inclusive, with a 1/15 chance of it being 1, a 2/15 chance
   of being 2, etc up to a 5/15 chance of it being 5.  The denominator here is the
   sum of all positive integers up to the provided number, also known as the
@@ -21,8 +21,8 @@ class TriangleWeight:
   other data with each number.
 
   When subclassing, override MAX with an integer value to enforce a maximum
-  number that can be instantiated and provide a default value for random and
-  reverse_random.
+  number that can be instantiated and provide a default value for trirand and
+  reverse_trirand.
 
   Can be converted to a vanilla integer using int() and acts as an integer for
   equality and hashability (making it interchangeable with its subclasses for
@@ -45,11 +45,11 @@ class TriangleWeight:
 
     # Return random object with the following probability for each number:
     # 1: 1/15, 2: 2/15, 3: 3/15, 4: 4/15, 5: 5/15
-    t = TriangleWeight.random(5)
+    t = TriangleWeight.trirand(5)
 
-    # Return random object with the following probability for each number:
+    # Return trirand object with the following probability for each number:
     # 1: 5/15, 2: 4/15, 3: 3/15, 2: 2/15, 1: 1/15
-    t = TriangleWeight.reverse_random(5)
+    t = TriangleWeight.reverse_trirand(5)
 
     # Subclass and specify MAX to provide limits/defaults
     class TriWeightThing(TriangleWeight):
@@ -62,11 +62,11 @@ class TriangleWeight:
     t = TriWeightThing.from_trinum_ceiling(15) # t.number == 5
     t = TriWeightThing.from_trinum_ceiling(16) # raises IndexError
 
-    TriWeightThing.random()  # 1-5, same spread as TriangleWeight.random(5)
-    TriWeightThing.random(4) # 1-4, same spread as TriangleWeight.random(4)
-    TriWeightThing.random(6) # raises IndexError
+    TriWeightThing.trirand()  # 1-5, same spread as TriangleWeight.trirand(5)
+    TriWeightThing.trirand(4) # 1-4, same spread as TriangleWeight.trirand(4)
+    TriWeightThing.trirand(6) # raises IndexError
 
-    # The above also applies to reverse_random
+    # The above also applies to reverse_trirand
   """
   number: int
   index: int = field(init=False)
@@ -85,7 +85,7 @@ class TriangleWeight:
     return cls(math.ceil(_float_from_trinum(trinum)))
 
   @classmethod
-  def random(cls, max = None):
+  def trirand(cls, max = None):
     """Return instance for a random int up to max, weighted with lower values the rarest"""
     if max is None:
       max = cls.MAX
@@ -94,13 +94,13 @@ class TriangleWeight:
     return cls.from_trinum_ceiling(random.randint(1, TriangleWeight(max).trinum))
 
   @classmethod
-  def reverse_random(cls, max = None):
+  def reverse_trirand(cls, max = None):
     """Return instance for a random int up to max, weighted with higher values the rarest"""
     if max is None:
       max = cls.MAX
     if max < 1 or (cls.MAX and cls.MAX < max):
       raise IndexError
-    return cls(max + 1 - TriangleWeight.random(max).number)
+    return cls(max + 1 - TriangleWeight.trirand(max).number)
 
   def __post_init__(self):
     number = self.number

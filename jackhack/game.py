@@ -199,14 +199,14 @@ class Game:
   def _generate_day(self, daynum, dayclass=Day):
     attributes = {
       'daynum': daynum,
-      'terrain_number': Element.random().number,
+      'terrain_number': Element.trirand().number,
       'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
       'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
     }
     if attributes['monster_gold']:
-      attributes['monster_kind_number'] = MonsterKind.random().number
-      attributes['monster_strength_number'] = MonsterKind.reverse_random().number
-      attributes['monster_weakness_number'] = MonsterKind.reverse_random().number
+      attributes['monster_kind_number'] = MonsterKind.trirand().number
+      attributes['monster_strength_number'] = MonsterKind.reverse_trirand().number
+      attributes['monster_weakness_number'] = MonsterKind.reverse_trirand().number
     self._add_day(attributes)
 
   def start(self):

@@ -60,51 +60,51 @@ class TriangleWeightTestCase(unittest.TestCase):
     with self.assertRaises(IndexError):
       TriangleWithMax.from_trinum_ceiling(11)
 
-  def test_random(self):
+  def test_trirand(self):
     random.seed(3656) # randint(1,10) eleven times returns 1, 2, 9, 5, 3, 7, 8, 4, 10, 6, 3
-    self.assertIs(TriangleWeight.random(4).number, 1)
-    self.assertIs(TriangleWeight.random(4).number, 2)
-    self.assertIs(TriangleWeight.random(4).number, 4)
-    self.assertIs(TriangleWeight.random(4).number, 3)
-    self.assertIs(TriangleWeight.random(4).number, 2)
-    self.assertIs(TriangleWeight.random(4).number, 4)
-    self.assertIs(TriangleWeight.random(4).number, 4)
+    self.assertIs(TriangleWeight.trirand(4).number, 1)
+    self.assertIs(TriangleWeight.trirand(4).number, 2)
+    self.assertIs(TriangleWeight.trirand(4).number, 4)
+    self.assertIs(TriangleWeight.trirand(4).number, 3)
+    self.assertIs(TriangleWeight.trirand(4).number, 2)
+    self.assertIs(TriangleWeight.trirand(4).number, 4)
+    self.assertIs(TriangleWeight.trirand(4).number, 4)
     # intentionally checking with max here to be sure ceiling vs floor yield different numbers
-    self.assertIs(TriangleWithMax.random().number, 3)
-    self.assertIs(TriangleWeight.random(4).number, 4)
-    self.assertIs(TriangleWeight.random(4).number, 3)
-    self.assertIs(TriangleWeight.random(4).number, 2)
+    self.assertIs(TriangleWithMax.trirand().number, 3)
+    self.assertIs(TriangleWeight.trirand(4).number, 4)
+    self.assertIs(TriangleWeight.trirand(4).number, 3)
+    self.assertIs(TriangleWeight.trirand(4).number, 2)
     with self.assertRaises(IndexError):
-      TriangleWeight.random(0)
+      TriangleWeight.trirand(0)
     with self.assertRaises(IndexError):
-      TriangleWeight.random(-1)
+      TriangleWeight.trirand(-1)
     with self.assertRaises(IndexError):
       # twelfth call randint(1,15) returns 4, which would lead to random number 3,
       # so this is (intentionally) testing that max is checked before calling randint
-      TriangleWithMax.random(5)
+      TriangleWithMax.trirand(5)
 
-  def test_reverse_random(self):
+  def test_reverse_trirand(self):
     random.seed(3656) # randint(1,10) ten times yields [1, 2, 9, 5, 3, 7, 8, 4, 10, 6]
-    self.assertIs(TriangleWeight.reverse_random(4).number, 4)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 2)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 4)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 3)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 2)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 3)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 1)
     # intentionally checking with max here to be sure ceiling vs floor yield different numbers
-    self.assertIs(TriangleWithMax.reverse_random().number, 2)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 1)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 2)
-    self.assertIs(TriangleWeight.reverse_random(4).number, 3)
+    self.assertIs(TriangleWithMax.reverse_trirand().number, 2)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 1)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 2)
+    self.assertIs(TriangleWeight.reverse_trirand(4).number, 3)
     with self.assertRaises(IndexError):
-      TriangleWeight.reverse_random(0)
+      TriangleWeight.reverse_trirand(0)
     with self.assertRaises(IndexError):
-      TriangleWeight.reverse_random(-1)
+      TriangleWeight.reverse_trirand(-1)
     with self.assertRaises(IndexError):
       # twelfth call randint(1,15) returns 4, which would lead to random number 3,
       # so this is (intentionally) testing that max is checked before calling randint
-      TriangleWithMax.random(5)
+      TriangleWithMax.trirand(5)
 
   def test_equality(self):
     one = TriangleWeight(3)
