@@ -9,7 +9,7 @@ def _float_from_trinum(trinum):
 
 @dataclass(frozen=True)
 class TriangleWeight:
-  """Select integer-associated objects weighted by their values.
+  """Select among integer-associated objects weighted by their values.
 
   For instance, the random(5) method would return an object representing an
   integer from 1 to 5 inclusive, with a 1/15 chance of it being 1, a 2/15 chance
