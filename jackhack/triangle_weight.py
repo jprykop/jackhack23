@@ -15,7 +15,13 @@ class TriangleWeight:
   integer from 1 to 5 inclusive, with a 1/15 chance of it being 1, a 2/15 chance
   of being 2, etc up to a 5/15 chance of it being 5.  The denominator here is the
   sum of all positive integers up to the provided number, also known as the
-  associated "triangle" number.
+  associated "triangle" number, as seen in this handy diagram:
+
+      *
+     * *
+    * * *
+   * * * *
+  * * * * *
 
   Use this directly if you just need numbers, subclass if you need to associate
   other data with each number.
@@ -87,18 +93,16 @@ class TriangleWeight:
   @classmethod
   def trirand(cls, max = None):
     """Return instance for a random int up to max, weighted with lower values the rarest"""
-    if max is None:
-      max = cls.MAX
-    if max < 1 or (cls.MAX and cls.MAX < max):
+    max = max or cls.MAX
+    if not max or max < 1 or (cls.MAX and cls.MAX < max):
       raise IndexError
     return cls.from_trinum_ceiling(random.randint(1, TriangleWeight(max).trinum))
 
   @classmethod
   def reverse_trirand(cls, max = None):
     """Return instance for a random int up to max, weighted with higher values the rarest"""
-    if max is None:
-      max = cls.MAX
-    if max < 1 or (cls.MAX and cls.MAX < max):
+    max = max or cls.MAX
+    if not max or max < 1 or (cls.MAX and cls.MAX < max):
       raise IndexError
     return cls(max + 1 - TriangleWeight.trirand(max).number)
 
