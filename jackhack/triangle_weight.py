@@ -2,29 +2,62 @@ import math
 import random
 from dataclasses import dataclass, field
 
-def _float_from_trinum(trinum):
-  if trinum < 1:
-    raise IndexError
-  return (math.sqrt(1 + 8 * trinum) - 1) / 2
+def trinum(number):
+  """Return the triangle number for the given integer.
 
-@dataclass(frozen=True)
-class TriangleWeight:
-  """Select among integer-associated objects weighted by their values.
-
-  For instance, the trirand(5) method would return an object representing an
-  integer from 1 to 5 inclusive, with a 1/15 chance of it being 1, a 2/15 chance
-  of being 2, etc up to a 5/15 chance of it being 5.  The denominator here is the
-  sum of all positive integers up to the provided number, also known as the
-  associated "triangle" number, as seen in this handy diagram:
+  The triangle number is the sum of all positive integers up to the provided
+  number, known as such because it can be stacked like a triangle:
 
       *
      * *
     * * *
    * * * *
   * * * * *
+  """
+  number = int(number)
+  if number < 1:
+    raise IndexError
+  return int((number * (number + 1)) / 2)
 
-  Use this directly if you just need numbers, subclass if you need to associate
-  other data with each number.
+def _float_from_trinum(trinum):
+  trinum = int(trinum)
+  if trinum < 1:
+    raise IndexError
+  return (math.sqrt(1 + 8 * trinum) - 1) / 2
+
+def from_trinum_floor(trinum):
+  """Return the maximum integer with a trinum no greater than the input."""
+  return int(_float_from_trinum(trinum))
+
+def from_trinum_ceiling(trinum):
+  """Return the minimum integer with a trinum no less than the input."""
+  return math.ceil(_float_from_trinum(trinum))
+
+def trirand(max):
+  """Return a random int up to max, triangle-weighted with lower values the rarest.
+
+  For instance, trirand(5) would return an integer from 1 to 5 inclusive, with
+  a 1/15 chance of 1, a 2/15 chance of 2, etc up to a 5/15 chance of it being 5.
+  The denominator here is the sum of all positive integers up to the provided
+  number, also known as the associated triangle number."""
+  if not max or max < 1:
+    raise IndexError
+  return from_trinum_ceiling(random.randint(1, trinum(max)))
+
+def reverse_trirand(max):
+  """Return a random int up to max, triangle-weighted with higher values the rarest.
+
+  Similar to trirand but reversed, so reverse_trirand(5) has a 1/15 chance of
+  being 5, a 2/15 chance of being 4, etc up to a 5/15 chance of being 1."""
+  return 1 - trirand(max) + max
+
+@dataclass(frozen=True)
+class TriangleWeight:
+  """A parent class for weighting integer-associated objects by their values.
+
+  You can use the triangle_weight module's functions directly if you just need
+  numbers.  This is a frozen dataclass intended to be subclassed so you can
+  associate other data with each number.
 
   When subclassing, override MAX with an integer value to enforce a maximum
   number that can be instantiated and provide a default value for trirand and
@@ -83,36 +116,35 @@ class TriangleWeight:
   @classmethod
   def from_trinum_floor(cls, trinum):
     """Return instance for the max number with a trinum no greater than the input"""
-    return cls(int(_float_from_trinum(trinum)))
+    return cls(from_trinum_floor(trinum))
 
   @classmethod
   def from_trinum_ceiling(cls, trinum):
     """Return instance for the min number with a trinum no less than the input"""
-    return cls(math.ceil(_float_from_trinum(trinum)))
+    return cls(from_trinum_ceiling(trinum))
 
   @classmethod
-  def trirand(cls, max = None):
+  def trirand(cls, max = 0):
     """Return instance for a random int up to max, weighted with lower values the rarest"""
     max = max or cls.MAX
-    if not max or max < 1 or (cls.MAX and cls.MAX < max):
+    if cls.MAX and cls.MAX < max:
       raise IndexError
-    return cls.from_trinum_ceiling(random.randint(1, TriangleWeight(max).trinum))
+    return cls(trirand(max))
 
   @classmethod
-  def reverse_trirand(cls, max = None):
+  def reverse_trirand(cls, max = 0):
     """Return instance for a random int up to max, weighted with higher values the rarest"""
     max = max or cls.MAX
-    if not max or max < 1 or (cls.MAX and cls.MAX < max):
+    if cls.MAX and cls.MAX < max:
       raise IndexError
-    return cls(max + 1 - TriangleWeight.trirand(max).number)
+    return cls(reverse_trirand(max))
 
   def __post_init__(self):
     number = self.number
     if number < 1 or (self.MAX and self.MAX < number):
       raise IndexError
     object.__setattr__(self, 'index', number - 1)
-    trinum = int((number * (number + 1)) / 2)
-    object.__setattr__(self, 'trinum', trinum)
+    object.__setattr__(self, 'trinum', trinum(number))
 
   def __int__(self):
     return self.number
