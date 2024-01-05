@@ -39,7 +39,7 @@ def trirand(max):
   For instance, trirand(5) would return an integer from 1 to 5 inclusive, with
   a 1/15 chance of 1, a 2/15 chance of 2, etc up to a 5/15 chance of it being 5.
   The denominator here is the sum of all positive integers up to the provided
-  max, also known as the associated triangle max."""
+  max, also known as the associated triangle number."""
   if not max or max < 1:
     raise IndexError
   return from_trinum_ceiling(random.randint(1, trinum(max)))
