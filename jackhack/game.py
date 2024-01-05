@@ -1,6 +1,6 @@
 import random
 from dataclasses import dataclass, field
-from jackhack.triangle_weight import TriangleWeight
+import jackhack.triangle_weight as tw
 
 # a single roll, returns a boolean
 def _swing(pc_level, target_level):
@@ -16,75 +16,75 @@ def _hack(pc_level, target_level, max=None):
 class InvalidMove(Exception):
   pass
 
-class MonsterKind(TriangleWeight):
-  KINDS = (
-    'yeti',
-    'dinosaur',
-    'dragon',
-    'demon',
-    'giant',
-    'cockatrice',
-    'gargoyle',
-    'vampire',
-    'werewolf',
-    'zombie',
-    'troll',
-    'ogre',
-    'goblin',
-    'blob'
-  )
+# class MonsterKind(TriangleWeight):
+#   KINDS = (
+#     'yeti',
+#     'dinosaur',
+#     'dragon',
+#     'demon',
+#     'giant',
+#     'cockatrice',
+#     'gargoyle',
+#     'vampire',
+#     'werewolf',
+#     'zombie',
+#     'troll',
+#     'ogre',
+#     'goblin',
+#     'blob'
+#   )
 
-  MAX = len(KINDS)
+#   MAX = len(KINDS)
 
-  def name(self):
-    self.KINDS[self.index]
+#   def name(self):
+#     self.KINDS[self.index]
 
-  def __str__(self):
-    self.name
+#   def __str__(self):
+#     self.name
 
-class Element(TriangleWeight):
-  KINDS = (
-    ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
-    ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
-    ('cheese','on the moon','cheddar','Ur','meteor','moon','Aliens'),
-    ('air','in the sky','fog','Lucy','diamond','sky','Hippies'),
-    ('fire','on a volcano','magma','Ifrit','ruby','volcano','Firemen'),
-    ('fairy','in a poppy field','sleep','Elphaba','emerald','fields','Lollipops'),
-    ('ice','in the arctic','ice','Shiva','ice','arctic','Vikings'),
-    ('water','at sea','aguaga','Poseidon','water','sea','Pirates'),
-    ('sand','in the desert','sandstorm','Ra','amber','desert','Fremen'),
-    ('rock','in the mountains','quake','Buddha','stone','mountains','Masons'),
-    ('mud','in a swamp','muck','Yoda','lucasite','swamp','Lizardmen'),
-    ('dark','in a cave','hole','Hades','black','caverns','Morlocks'),
-    ('wood','in the forest','leaf','Treebush','wood','forest','Hoods'),
-    ('grass','on the prairie','mow','Laura','grass','prairie','Barbarians')
-  )
+# class Element(TriangleWeight):
+#   KINDS = (
+#     ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
+#     ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
+#     ('cheese','on the moon','cheddar','Ur','meteor','moon','Aliens'),
+#     ('air','in the sky','fog','Lucy','diamond','sky','Hippies'),
+#     ('fire','on a volcano','magma','Ifrit','ruby','volcano','Firemen'),
+#     ('fairy','in a poppy field','sleep','Elphaba','emerald','fields','Lollipops'),
+#     ('ice','in the arctic','ice','Shiva','ice','arctic','Vikings'),
+#     ('water','at sea','aguaga','Poseidon','water','sea','Pirates'),
+#     ('sand','in the desert','sandstorm','Ra','amber','desert','Fremen'),
+#     ('rock','in the mountains','quake','Buddha','stone','mountains','Masons'),
+#     ('mud','in a swamp','muck','Yoda','lucasite','swamp','Lizardmen'),
+#     ('dark','in a cave','hole','Hades','black','caverns','Morlocks'),
+#     ('wood','in the forest','leaf','Treebush','wood','forest','Hoods'),
+#     ('grass','on the prairie','mow','Laura','grass','prairie','Barbarians')
+#   )
 
-  MAX = len(KINDS)
+#   MAX = len(KINDS)
 
-  def name(self):
-    self.KINDS[self.index][0]
+#   def name(self):
+#     self.KINDS[self.index][0]
 
-  def __str__(self):
-    self.name
+#   def __str__(self):
+#     self.name
 
-  def terrain(self):
-    self.KINDS[self.index][1]
+#   def terrain(self):
+#     self.KINDS[self.index][1]
 
-  def spell(self):
-    self.KINDS[self.index][2]
+#   def spell(self):
+#     self.KINDS[self.index][2]
 
-  def god(self):
-    self.KINDS[self.index][3]
+#   def god(self):
+#     self.KINDS[self.index][3]
 
-  def gem(self):
-    self.KINDS[self.index][4]
+#   def gem(self):
+#     self.KINDS[self.index][4]
 
-  def mapname(self):
-    self.KINDS[self.index][5]
+#   def mapname(self):
+#     self.KINDS[self.index][5]
 
-  def guild(self):
-    self.KINDS[self.index][6]
+#   def guild(self):
+#     self.KINDS[self.index][6]
 
 @dataclass
 class Monster:
@@ -94,13 +94,13 @@ class Monster:
   weakness_number: int
 
   def kind(self):
-    MonsterKind(self.kind_number)
+    self.kind_number
 
   def strength(self):
-    Element(self.strength_number)
+    self.strength_number
 
   def weakness(self):
-    Element(self.weakness_number)
+    self.weakness_number
 
 @dataclass
 class Day:
@@ -174,7 +174,7 @@ class Day:
     ) if self.monster_gold else None
 
   def terrain(self):
-    return Element(self.terrain_number)
+    return self.terrain_number
 
   def is_last_day(self):
     return self.daynum == self.MAX_DAYS
@@ -184,6 +184,9 @@ class Game:
   # things to override for django version (including __init__)
   player_name: str
   _days: list = field(default_factory=list)
+
+  monster_maker = tw.TriangleWeight(14)
+  element_maker = tw.TriangleWeight(14)
 
   def _add_day(self, attributes):
     self._days.append(Day(**attributes))
@@ -199,14 +202,14 @@ class Game:
   def _generate_day(self, daynum, dayclass=Day):
     attributes = {
       'daynum': daynum,
-      'terrain_number': Element.trirand().number,
+      'terrain_number': self.monster_maker.trirand(),
       'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
       'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
     }
     if attributes['monster_gold']:
-      attributes['monster_kind_number'] = MonsterKind.trirand().number
-      attributes['monster_strength_number'] = MonsterKind.reverse_trirand().number
-      attributes['monster_weakness_number'] = MonsterKind.reverse_trirand().number
+      attributes['monster_kind_number'] = self.monster_maker.trirand()
+      attributes['monster_strength_number'] = self.monster_maker.reverse_trirand()
+      attributes['monster_weakness_number'] = self.monster_maker.reverse_trirand()
     self._add_day(attributes)
 
   def start(self):
@@ -238,7 +241,7 @@ class Game:
 
   def level(self, job):
     xp = self.xp(job)
-    return TriangleWeight.from_trinum_floor(xp).number + 1 if xp else 1
+    return tw.from_trinum_floor(xp) + 1 if xp else 1
 
   def items(self, job):
     return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])

@@ -1,6 +1,6 @@
 from typing import Any
 from django.db import models
-from jackhack.game import Game, Day, MonsterKind, Element
+from jackhack.game import Game, Day
 
 class SaveGame(Game, models.Model):
   player_name = models.CharField(max_length=16)
@@ -36,10 +36,10 @@ class SaveDay(Day, models.Model):
   monster_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   monster_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   gold_spent = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  terrain_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Element.MAX + 1)])
-  monster_kind_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, MonsterKind.MAX + 1)])
-  monster_strength_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Element.MAX + 1)])
-  monster_weakness_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Element.MAX + 1)])
+  terrain_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
+  monster_kind_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.monster_maker.max + 1)])
+  monster_strength_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
+  monster_weakness_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
   health_lost_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   health_gained_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   health_lost_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
