@@ -4,11 +4,6 @@ from jackhack.game import Game, Day
 
 class SaveGame(Game, models.Model):
   player_name = models.CharField(max_length=16)
-  # warrior_xp = models.IntegerField(default=0)
-  # healer_xp = models.IntegerField(default=0)
-  # thief_xp = models.IntegerField(default=0)
-  # wizard_xp = models.IntegerField(default=0)
-  # hunter_xp = models.IntegerField(default=0)
 
   def __init__(self, *args, **kwargs):
     models.Model.__init__(self, *args, **kwargs)
@@ -36,10 +31,10 @@ class SaveDay(Day, models.Model):
   monster_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   monster_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   gold_spent = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  terrain_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
-  monster_kind_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.monster_maker.max + 1)])
-  monster_strength_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
-  monster_weakness_number = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
+  terrain = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
+  monster_kind = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.monster_maker.max + 1)])
+  monster_strength = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
+  monster_weakness = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
   health_lost_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   health_gained_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
   health_lost_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])

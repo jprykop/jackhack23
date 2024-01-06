@@ -89,18 +89,9 @@ class InvalidMove(Exception):
 @dataclass
 class Monster:
   gold: int
-  kind_number: int
-  strength_number: int
-  weakness_number: int
-
-  def kind(self):
-    self.kind_number
-
-  def strength(self):
-    self.strength_number
-
-  def weakness(self):
-    self.weakness_number
+  kind: int
+  strength: int
+  weakness: int
 
 @dataclass
 class Day:
@@ -111,10 +102,10 @@ class Day:
   monster_gold: int = None
   monster_gold_acquired: int = None
   gold_spent: int = None
-  terrain_number: int = None
-  monster_kind_number: int = None
-  monster_strength_number: int = None
-  monster_weakness_number: int = None
+  terrain: int = None
+  monster_kind: int = None
+  monster_strength: int = None
+  monster_weakness: int = None
   health_lost_from_town: int = None
   health_gained_from_town: int = None
   health_lost_from_monster: int = None
@@ -168,13 +159,10 @@ class Day:
   def monster(self):
     return Monster(
       gold=self.monster_gold,
-      kind_number=self.monster_kind_number,
-      strength_number=self.monster_strength_number,
-      weakness_number=self.monster_weakness_number
+      kind=self.monster_kind,
+      strength=self.monster_strength,
+      weakness=self.monster_weakness
     ) if self.monster_gold else None
-
-  def terrain(self):
-    return self.terrain_number
 
   def is_last_day(self):
     return self.daynum == self.MAX_DAYS
@@ -202,14 +190,14 @@ class Game:
   def _generate_day(self, daynum, dayclass=Day):
     attributes = {
       'daynum': daynum,
-      'terrain_number': self.monster_maker.trirand(),
+      'terrain': self.monster_maker.trirand(),
       'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
       'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
     }
     if attributes['monster_gold']:
-      attributes['monster_kind_number'] = self.monster_maker.trirand()
-      attributes['monster_strength_number'] = self.monster_maker.reverse_trirand()
-      attributes['monster_weakness_number'] = self.monster_maker.reverse_trirand()
+      attributes['monster_kind'] = self.monster_maker.trirand()
+      attributes['monster_strength'] = self.monster_maker.reverse_trirand()
+      attributes['monster_weakness'] = self.monster_maker.reverse_trirand()
     self._add_day(attributes)
 
   def start(self):
@@ -219,11 +207,11 @@ class Game:
       self._generate_day(daynum)
     self._add_day({
       'daynum': Day.MAX_DAYS,
-      'terrain_number': 1,
+      'terrain': 1,
       'town_gold': Day.MAX_DAYS,
       'monster_gold': Day.MAX_DAYS,
-      'monster_strength_number': 1,
-      'monster_weakness_number': 2
+      'monster_strength': 1,
+      'monster_weakness': 2
     })
 
   def day(self, daynum):
@@ -244,7 +232,7 @@ class Game:
     return tw.from_trinum_floor(xp) + 1 if xp else 1
 
   def items(self, job):
-    return set([day.terrain() for day in self.days() if day.job_played == job and day.job_item_acquired])
+    return set([day.terrain for day in self.days() if day.job_played == job and day.job_item_acquired])
 
   def health(self):
     return 1 + sum([day.net_health() for day in self.days()])
@@ -269,9 +257,9 @@ class Game:
     if not monster:
       raise InvalidMove("No monster odds without monster")
     monster_level = monster_level or monster.gold
-    if day.terrain() == monster.strength():
+    if day.terrain == monster.strength():
       monster_level = monster_level * 2
-    if day.terrain() == monster.weakness():
+    if day.terrain == monster.weakness():
       job_level = job_level * 2
     return (job_level, monster_level)
 
@@ -292,7 +280,7 @@ class Game:
     day = self.current_day()
     job_level = job_level or self.level(job)
     if not target_level: target_level = day.town_gold or day.daynum
-    if day.terrain() in self.items(job):
+    if day.terrain in self.items(job):
       job_level = job_level * 2
     return (job_level, target_level)
 
@@ -303,7 +291,7 @@ class Game:
       raise InvalidMove("No thief odds without town")
     job_level = job_level or self.level(job)
     if not town_level: town_level = day.town_gold
-    if day.terrain() in self.items(job):
+    if day.terrain in self.items(job):
       town_level = town_level * 2 # it's a weakness
     return (job_level, town_level)
 
@@ -328,7 +316,7 @@ class Game:
       raise InvalidMove("No ranger odds without monster or town")
     job_level = job_level or self.level(job)
     target_level = target_level or (monster.gold if monster else town_gold)
-    if day.terrain() in self.items(job):
+    if day.terrain in self.items(job):
       job_level = job_level * 2
     return (job_level, target_level)
 
