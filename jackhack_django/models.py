@@ -43,6 +43,3 @@ class SaveDay(BaseDay, models.Model):
   job_played = models.CharField(max_length=16, blank=True)
   job_item_acquired = models.BooleanField(blank=True, null=True)
   played = models.BooleanField(default=False)
-
-  def __init__(self, *args, **kwargs):
-    models.Model.__init__(self, *args, **kwargs)
