@@ -96,27 +96,32 @@ class Monster:
 class BaseDay:
   MAX_DAYS = 100
 
+  DATA_ATTRIBUTES = [
+    'daynum',
+    'town_gold',
+    'town_gold_acquired',
+    'monster_gold',
+    'monster_gold_acquired',
+    'gold_spent',
+    'terrain',
+    'monster_kind',
+    'monster_strength',
+    'monster_weakness',
+    'health_lost_from_town',
+    'health_gained_from_town',
+    'health_lost_from_monster',
+    'health_gained_from_monster',
+    'health_gained_otherwise',
+    'job_played',
+    'job_item_acquired',
+    'played'
+  ]
+
   def as_dict(self):
-    return {
-      'daynum': self.daynum,
-      'town_gold': self.town_gold,
-      'town_gold_acquired': self.town_gold_acquired,
-      'monster_gold': self.monster_gold,
-      'monster_gold_acquired': self.monster_gold_acquired,
-      'gold_spent': self.gold_spent,
-      'terrain': self.terrain,
-      'monster_kind': self.monster_kind,
-      'monster_strength': self.monster_strength,
-      'monster_weakness': self.monster_weakness,
-      'health_lost_from_town': self.health_lost_from_town,
-      'health_gained_from_town': self.health_gained_from_town,
-      'health_lost_from_monster': self.health_lost_from_monster,
-      'health_gained_from_monster': self.health_gained_from_monster,
-      'health_gained_otherwise': self.health_gained_otherwise,
-      'job_played': self.job_played,
-      'job_item_acquired': self.job_item_acquired,
-      'played': self.played
-    }
+    out = {}
+    for att in self.DATA_ATTRIBUTES:
+      out[att] = getattr(self, att)
+    return out
 
   def acquire_town_gold(self):
     self.town_gold_acquired = self.town_gold
@@ -433,4 +438,3 @@ class Game(BaseGame):
 
   def days(self):
     return self._days
-
