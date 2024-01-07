@@ -93,29 +93,30 @@ class Monster:
   strength: int
   weakness: int
 
-@dataclass
-class Day:
-  # only need to override these properties via __init__ in django version
-  daynum: int
-  town_gold: int = None
-  town_gold_acquired: int = None
-  monster_gold: int = None
-  monster_gold_acquired: int = None
-  gold_spent: int = None
-  terrain: int = None
-  monster_kind: int = None
-  monster_strength: int = None
-  monster_weakness: int = None
-  health_lost_from_town: int = None
-  health_gained_from_town: int = None
-  health_lost_from_monster: int = None
-  health_gained_from_monster: int = None
-  health_gained_otherwise: int = None
-  job_played: str = ''
-  job_item_acquired: bool = None
-  played: bool = False
-
+class BaseDay:
   MAX_DAYS = 100
+
+  def as_dict(self):
+    return {
+      'daynum': self.daynum,
+      'town_gold': self.town_gold,
+      'town_gold_acquired': self.town_gold_acquired,
+      'monster_gold': self.monster_gold,
+      'monster_gold_acquired': self.monster_gold_acquired,
+      'gold_spent': self.gold_spent,
+      'terrain': self.terrain,
+      'monster_kind': self.monster_kind,
+      'monster_strength': self.monster_strength,
+      'monster_weakness': self.monster_weakness,
+      'health_lost_from_town': self.health_lost_from_town,
+      'health_gained_from_town': self.health_gained_from_town,
+      'health_lost_from_monster': self.health_lost_from_monster,
+      'health_gained_from_monster': self.health_gained_from_monster,
+      'health_gained_otherwise': self.health_gained_otherwise,
+      'job_played': self.job_played,
+      'job_item_acquired': self.job_item_acquired,
+      'played': self.played
+    }
 
   def acquire_town_gold(self):
     self.town_gold_acquired = self.town_gold
@@ -168,36 +169,43 @@ class Day:
     return self.daynum == self.MAX_DAYS
 
 @dataclass
-class Game:
-  # things to override for django version (including __init__)
-  player_name: str
-  _days: list = field(default_factory=list)
+class Day(BaseDay):
+  daynum: int
+  town_gold: int = None
+  town_gold_acquired: int = None
+  monster_gold: int = None
+  monster_gold_acquired: int = None
+  gold_spent: int = None
+  terrain: int = None
+  monster_kind: int = None
+  monster_strength: int = None
+  monster_weakness: int = None
+  health_lost_from_town: int = None
+  health_gained_from_town: int = None
+  health_lost_from_monster: int = None
+  health_gained_from_monster: int = None
+  health_gained_otherwise: int = None
+  job_played: str = ''
+  job_item_acquired: bool = None
+  played: bool = False
 
-  monster_maker = tw.TriangleWeight(14)
-  element_maker = tw.TriangleWeight(14)
-
-  def _add_day(self, attributes):
-    self._days.append(Day(**attributes))
-
-  def days(self):
-    return self._days
-
-  def _save_game(self):
-    pass
-
-  # should not need to override for django version
+class BaseGame:
+  ELEMENTS_COUNT = 14
+  MONSTER_KINDS_COUNT = 14
 
   def _generate_day(self, daynum, dayclass=Day):
+    element_maker = tw.TriangleWeight(self.ELEMENTS_COUNT)
+    monster_maker = tw.TriangleWeight(self.MONSTER_KINDS_COUNT)
     attributes = {
       'daynum': daynum,
-      'terrain': self.monster_maker.trirand(),
+      'terrain': element_maker.trirand(),
       'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
       'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
     }
     if attributes['monster_gold']:
-      attributes['monster_kind'] = self.monster_maker.trirand()
-      attributes['monster_strength'] = self.monster_maker.reverse_trirand()
-      attributes['monster_weakness'] = self.monster_maker.reverse_trirand()
+      attributes['monster_kind'] = monster_maker.trirand()
+      attributes['monster_strength'] = element_maker.reverse_trirand()
+      attributes['monster_weakness'] = element_maker.reverse_trirand()
     self._add_day(attributes)
 
   def start(self):
@@ -249,7 +257,6 @@ class Game:
       self.JOBS[job](self)
       day.job_played = job
     day.played = True
-    self._save_game()
 
   def _monster_odds(self, job_level, monster_level=None):
     day = self.current_day()
@@ -415,3 +422,15 @@ class Game:
     'wizard': _wizard,
     'ranger': _ranger
   }
+
+@dataclass
+class Game(BaseGame):
+  player_name: str
+  _days: list = field(default_factory=list)
+
+  def _add_day(self, attributes):
+    self._days.append(Day(**attributes))
+
+  def days(self):
+    return self._days
+

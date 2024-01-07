@@ -1,8 +1,8 @@
 from typing import Any
 from django.db import models
-from jackhack.game import Game, Day
+from jackhack.game import BaseGame, BaseDay
 
-class SaveGame(Game, models.Model):
+class SaveGame(BaseGame, models.Model):
   player_name = models.CharField(max_length=16)
 
   def __init__(self, *args, **kwargs):
@@ -18,28 +18,28 @@ class SaveGame(Game, models.Model):
       self._days = list(self.saveday_set.all())
     return self._days
 
-  def _save_game(self):
+  def save_game(self):
     self.save()
     for day in self.days():
       day.save()
 
-class SaveDay(Day, models.Model):
+class SaveDay(BaseDay, models.Model):
   game = models.ForeignKey(SaveGame, on_delete=models.CASCADE)
-  daynum = models.IntegerField(choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  town_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  town_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  monster_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  monster_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  gold_spent = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  terrain = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
-  monster_kind = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.monster_maker.max + 1)])
-  monster_strength = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
-  monster_weakness = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Game.element_maker.max + 1)])
-  health_lost_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  health_gained_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  health_lost_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  health_gained_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
-  health_gained_otherwise = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, Day.MAX_DAYS + 1)])
+  daynum = models.IntegerField(choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  town_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  town_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  monster_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  monster_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  gold_spent = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  terrain = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseGame.ELEMENTS_COUNT + 1)])
+  monster_kind = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseGame.MONSTER_KINDS_COUNT + 1)])
+  monster_strength = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseGame.ELEMENTS_COUNT + 1)])
+  monster_weakness = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseGame.ELEMENTS_COUNT + 1)])
+  health_lost_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  health_gained_from_town = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  health_lost_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  health_gained_from_monster = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  health_gained_otherwise = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
   job_played = models.CharField(max_length=16, blank=True)
   job_item_acquired = models.BooleanField(blank=True, null=True)
   played = models.BooleanField(default=False)

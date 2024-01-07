@@ -20,17 +20,16 @@ class GameTestCase(unittest.TestCase):
     self.assertEqual(self.game().player_name, "Jack")
 
   def test_start(self):
-    actual_days = [asdict(day) for day in self.started_game().days()]
+    actual_days = [day.as_dict() for day in self.started_game().days()]
     ### Uncomment below when you need to regenerate EXPECTED_DAYS
-    # for day in actual_days:
-    #   print(f"{day},")
+    # print(actual_days)
     self.assertEqual(actual_days, GameTestCase.EXPECTED_DAYS)
 
   def test_day(self):
     game = self.started_game()
     day = game.day(57)
     expected_day = self.EXPECTED_DAYS[56]
-    self.assertEqual(asdict(day), expected_day)
+    self.assertEqual(day.as_dict(), expected_day)
 
   def test_current_day(self):
     game = self.started_game()
@@ -39,7 +38,7 @@ class GameTestCase(unittest.TestCase):
       day.played = True
     today = game.current_day()
     expected_day = self.EXPECTED_DAYS[9]
-    self.assertEqual(asdict(today), expected_day)
+    self.assertEqual(today.as_dict(), expected_day)
 
   def test_start_with_zero_gold(self):
     self.assertEqual(self.started_game().gold(), 0)
