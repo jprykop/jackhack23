@@ -16,15 +16,11 @@ class GameTestCase(unittest.TestCase):
     game.start()
     return game
 
-  @classmethod
-  def days_to_dicts(cls, game):
-    return [asdict(day) for day in game.days()]
-
   def test_player_name(self):
     self.assertEqual(self.game().player_name, "Jack")
 
   def test_start(self):
-    actual_days = self.days_to_dicts(self.started_game())
+    actual_days = [asdict(day) for day in self.started_game().days()]
     ### Uncomment below when you need to regenerate EXPECTED_DAYS
     # for day in actual_days:
     #   print(f"{day},")

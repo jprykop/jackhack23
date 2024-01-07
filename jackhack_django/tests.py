@@ -1,6 +1,7 @@
 from django.test import TestCase
 from jackhack_django.models import SaveGame
 from jackhack.tests.test_game import GameTestCase
+from dataclasses import asdict
 
 class SaveGameTest(GameTestCase, TestCase):
   @classmethod
@@ -13,4 +14,4 @@ class SaveGameTest(GameTestCase, TestCase):
 
   def test_saved_game_started(self):
     reloaded_game = SaveGame.objects.get(id=self.started_game().id)
-    self.assertEqual(self.days_to_dicts(reloaded_game), GameTestCase.EXPECTED_DAYS)
+    self.assertEqual([asdict(day) for day in reloaded_game.days()], self.EXPECTED_DAYS)
