@@ -95,13 +95,6 @@ ELEMENTS = map(__map_element,(
 #     ('grass','on the prairie','mow','Laura','grass','prairie','Barbarians')
 #   )
 
-@dataclass
-class Monster:
-  gold: int
-  kind: int
-  strength: int
-  weakness: int
-
 class BaseDay:
   MAX_DAYS = 100
 
@@ -170,14 +163,6 @@ class BaseDay:
       if self.health_lost_from_monster: net -= self.health_lost_from_monster
       if self.health_lost_from_town: net -= self.health_lost_from_town
     return net
-
-  def monster(self):
-    return Monster(
-      gold=self.monster_level,
-      kind=self.monster_kind,
-      strength=self.monster_strength,
-      weakness=self.monster_weakness
-    ) if self.monster_level else None
 
   def is_last_day(self):
     return self.daynum == self.MAX_DAYS
