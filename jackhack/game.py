@@ -16,34 +16,69 @@ def _hack(pc_level, target_level, max=None):
 class InvalidMove(Exception):
   pass
 
-# class MonsterKind(TriangleWeight):
-#   KINDS = (
-#     'yeti',
-#     'dinosaur',
-#     'dragon',
-#     'demon',
-#     'giant',
-#     'cockatrice',
-#     'gargoyle',
-#     'vampire',
-#     'werewolf',
-#     'zombie',
-#     'troll',
-#     'ogre',
-#     'goblin',
-#     'blob'
-#   )
+MONSTERS = (
+  'yeti',
+  'dinosaur',
+  'dragon',
+  'demon',
+  'giant',
+  'cockatrice',
+  'gargoyle',
+  'vampire',
+  'werewolf',
+  'zombie',
+  'troll',
+  'ogre',
+  'goblin',
+  'blob'
+)
 
-#   MAX = len(KINDS)
+ARMOR = (
+  'breastplate',
+  'helm',
+  'left gauntlet',
+  'right gauntlet',
+  'left boot',
+  'right boot',
+  'left vambrace',
+  'right vambrace',
+  'left greave',
+  'right greave',
+  'left pauldron',
+  'right pauldron',
+  'visor',
+  'feather'
+)
 
-#   def name(self):
-#     self.KINDS[self.index]
+def __map_element(e):
+  return {
+    'name':    e[0],
+    'place':   e[1],
+    'terrain': e[2],
+    'place':   e[3],
+    'spell':   e[4],
+    'god':     e[5]
+  }
 
-#   def __str__(self):
-#     self.name
+ELEMENTS = map(__map_element,(
+  ('psyche',   'in your mind',      'the imagination',  'slack',     'Bob'),
+  ('time',     'lost in time',      'history',          'warp',      'The Doctor'),
+  ('space',    'on the moon',       'the moon',         'rocket',    'Luna'),
+  ('air',      'in the sky',        'the sky',          'fog',       'Zeus'),
+  ('fire',     'on a volcano',      'the volcano',      'fire',      'Vulcan'),
+  ('fairy',    'in fairyland',      'fairyland',        'sleep',     'Titania'),
+  ('ice',      'in the arctic',     'the arctic',       'ice',       'Shiva'),
+  ('water',    'at sea',            'the ocean',        'water',     'Poseidon'),
+  ('sand',     'in the desert',     'the desert',       'sandstorm', 'Ra'),
+  ('rock',     'on a mountain',     'the mountains',    'quake',     'Buddha'),
+  ('mud',      'in a swamp',        'the swamp',        'poison',    'Yoda'),
+  ('darkness', 'in a cave',         'the underworld',   'darkness',  'Hades'),
+  ('wood',     'in a forest',       'the forest',       'tangle',    'Artemis'),
+  ('grass',    'on the prairie',    'the prairie',      'mow',       'Demeter')
+))
 
-# class Element(TriangleWeight):
-#   KINDS = (
+### name/terrain/spell/gold/gem/mapname/guild
+#   ORIGINAL_ELEMENTS = (
 #     ('concrete','in a parking lot','slack','Bob','rhinestone','pavement','Slackers'),
 #     ('time','in another dimension','warp','Cthulu','quantum','theoretical','Shoggoths'),
 #     ('cheese','on the moon','cheddar','Ur','meteor','moon','Aliens'),
@@ -60,32 +95,6 @@ class InvalidMove(Exception):
 #     ('grass','on the prairie','mow','Laura','grass','prairie','Barbarians')
 #   )
 
-#   MAX = len(KINDS)
-
-#   def name(self):
-#     self.KINDS[self.index][0]
-
-#   def __str__(self):
-#     self.name
-
-#   def terrain(self):
-#     self.KINDS[self.index][1]
-
-#   def spell(self):
-#     self.KINDS[self.index][2]
-
-#   def god(self):
-#     self.KINDS[self.index][3]
-
-#   def gem(self):
-#     self.KINDS[self.index][4]
-
-#   def mapname(self):
-#     self.KINDS[self.index][5]
-
-#   def guild(self):
-#     self.KINDS[self.index][6]
-
 @dataclass
 class Monster:
   gold: int
@@ -98,9 +107,9 @@ class BaseDay:
 
   DATA_ATTRIBUTES = [
     'daynum',
-    'town_gold',
+    'town_level',
     'town_gold_acquired',
-    'monster_gold',
+    'monster_level',
     'monster_gold_acquired',
     'gold_spent',
     'terrain',
@@ -124,10 +133,10 @@ class BaseDay:
     return out
 
   def acquire_town_gold(self):
-    self.town_gold_acquired = self.town_gold
+    self.town_gold_acquired = self.town_level
 
   def acquire_monster_gold(self):
-    self.monster_gold_acquired = self.monster_gold
+    self.monster_gold_acquired = self.monster_level
 
   def acquire_job_item(self):
     self.job_item_acquired = True
@@ -147,8 +156,8 @@ class BaseDay:
   def net_xp(self):
     net = 0
     if self.played:
-      if self.town_gold: net += self.town_gold
-      if self.monster_gold: net += self.monster_gold
+      if self.town_level: net += self.town_level
+      if self.monster_level: net += self.monster_level
       if not net: net = self.daynum
     return net
 
@@ -164,11 +173,11 @@ class BaseDay:
 
   def monster(self):
     return Monster(
-      gold=self.monster_gold,
+      gold=self.monster_level,
       kind=self.monster_kind,
       strength=self.monster_strength,
       weakness=self.monster_weakness
-    ) if self.monster_gold else None
+    ) if self.monster_level else None
 
   def is_last_day(self):
     return self.daynum == self.MAX_DAYS
@@ -176,9 +185,9 @@ class BaseDay:
 @dataclass
 class Day(BaseDay):
   daynum: int
-  town_gold: int = None
+  town_level: int = None
   town_gold_acquired: int = None
-  monster_gold: int = None
+  monster_level: int = None
   monster_gold_acquired: int = None
   gold_spent: int = None
   terrain: int = None
@@ -204,10 +213,10 @@ class BaseGame:
     attributes = {
       'daynum': daynum,
       'terrain': element_maker.trirand(),
-      'town_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
-      'monster_gold': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
+      'town_level': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= Day.MAX_DAYS - daynum else None,
+      'monster_level': random.randint(1, daynum) if random.randint(1, Day.MAX_DAYS) <= daynum else None
     }
-    if attributes['monster_gold']:
+    if attributes['monster_level']:
       attributes['monster_kind'] = monster_maker.trirand()
       attributes['monster_strength'] = element_maker.reverse_trirand()
       attributes['monster_weakness'] = element_maker.reverse_trirand()
@@ -221,8 +230,8 @@ class BaseGame:
     self._add_day({
       'daynum': Day.MAX_DAYS,
       'terrain': 1,
-      'town_gold': Day.MAX_DAYS,
-      'monster_gold': Day.MAX_DAYS,
+      'town_level': Day.MAX_DAYS,
+      'monster_level': Day.MAX_DAYS,
       'monster_strength': 1,
       'monster_weakness': 2
     })
@@ -291,7 +300,7 @@ class BaseGame:
     job = 'cleric'
     day = self.current_day()
     job_level = job_level or self.level(job)
-    if not target_level: target_level = day.town_gold or day.daynum
+    if not target_level: target_level = day.town_level or day.daynum
     if day.terrain in self.items(job):
       job_level = job_level * 2
     return (job_level, target_level)
@@ -299,10 +308,10 @@ class BaseGame:
   def _thief_odds(self, job_level=None, town_level=None):
     job = 'thief'
     day = self.current_day()
-    if not day.town_gold:
+    if not day.town_level:
       raise InvalidMove("No thief odds without town")
     job_level = job_level or self.level(job)
-    if not town_level: town_level = day.town_gold
+    if not town_level: town_level = day.town_level
     if day.terrain in self.items(job):
       town_level = town_level * 2 # it's a weakness
     return (job_level, town_level)
@@ -323,11 +332,11 @@ class BaseGame:
     job = 'ranger'
     day = self.current_day()
     monster = day.monster
-    town_gold = day.town_gold
-    if not monster or town_gold:
+    town_level = day.town_level
+    if not monster or town_level:
       raise InvalidMove("No ranger odds without monster or town")
     job_level = job_level or self.level(job)
-    target_level = target_level or (monster.gold if monster else town_gold)
+    target_level = target_level or (monster.gold if monster else town_level)
     if day.terrain in self.items(job):
       job_level = job_level * 2
     return (job_level, target_level)
@@ -343,37 +352,37 @@ class BaseGame:
 
   def _warrior(self):
     day = self.current_day()
-    town_gold = day.town_gold
-    monster_gold = day.monster_gold
-    if monster_gold:
+    town_level = day.town_level
+    monster_level = day.monster_level
+    if monster_level:
       day.health_lost_from_monster = _hack(self._monster_odds(*self._warrior_odds()), self.health())
       if self.health() > 0:
         day.acquire_monster_gold()
         day.acquire_town_gold()
       else:
         day.health_gained_otherwise = 1
-    elif town_gold:
+    elif town_level:
       day.acquire_job_item()
 
   def _cleric(self):
     day = self.current_day()
-    town_gold = day.town_gold
-    if town_gold:
+    town_level = day.town_level
+    if town_level:
       if _swing(*self._cleric_odds()):
-        day.health_gained_from_town = town_gold
+        day.health_gained_from_town = town_level
         day.acquire_job_item()
 
   def _thief(self):
     day = self.current_day()
-    town_gold = day.town_gold
-    monster_gold = day.monster_gold
-    if monster_gold:
+    town_level = day.town_level
+    monster_level = day.monster_level
+    if monster_level:
       if _swing(self._monster_odds(self.level('thief'))):
         day.acquire_monster_gold()
       else:
-        day.health_lost_from_monster = min(self.health(), self.monster_gold)
+        day.health_lost_from_monster = min(self.health(), self.monster_level)
     if self.health() > 0:
-      if town_gold:
+      if town_level:
         if _swing(self._thief_odds()):
           day.acquire_town_gold()
         else:
@@ -383,29 +392,29 @@ class BaseGame:
 
   def _wizard(self):
     day = self.current_day()
-    town_gold = day.town_gold
-    monster_gold = day.monster_gold
+    town_level = day.town_level
+    monster_level = day.monster_level
     # TODO: can only attack if health > 1
-    if monster_gold:
+    if monster_level:
       if _swing(self._monster_odds(*self._wizard_odds())):
         day.acquire_monster_gold()
         day.acquire_town_gold()
       else:
-        day.health_lost_from_monster = min(self.health(), monster_gold)
-    elif town_gold:
+        day.health_lost_from_monster = min(self.health(), monster_level)
+    elif town_level:
       day.acquire_job_item()
     if self.health() <= 0:
       day.health_gained_otherwise = 1
 
   def _ranger(self):
     day = self.current_day()
-    town_gold = day.town_gold
-    monster_gold = day.monster_gold
-    if monster_gold:
+    town_level = day.town_level
+    monster_level = day.monster_level
+    if monster_level:
       if _swing(self._monster_odds(*self._ranger_odds())):
         day.acquire_town_gold()
-        day.health_gained_from_monster = monster_gold
-    elif town_gold:
+        day.health_gained_from_monster = monster_level
+    elif town_level:
       day.health_lost_from_town = _hack(*self._ranger_odds(), self.health())
       if self.health() > 0:
         day.acquire_town_gold()

@@ -26,9 +26,9 @@ class SaveGame(BaseGame, models.Model):
 class SaveDay(BaseDay, models.Model):
   game = models.ForeignKey(SaveGame, on_delete=models.CASCADE)
   daynum = models.IntegerField(choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
-  town_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  town_level = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
   town_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
-  monster_gold = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
+  monster_level = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
   monster_gold_acquired = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
   gold_spent = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseDay.MAX_DAYS + 1)])
   terrain = models.IntegerField(blank=True, null=True, choices=[(x,x) for x in range(1, BaseGame.ELEMENTS_COUNT + 1)])
