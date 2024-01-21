@@ -1,9 +1,11 @@
 from typing import Any
 from django.db import models
+from django.contrib.sessions.models import Session
 from jackhack.game import BaseGame, BaseDay
 
 class SaveGame(BaseGame, models.Model):
   player_name = models.CharField(max_length=16)
+  session = models.ForeignKey(Session, on_delete=models.SET_NULL, null=True)
 
   def __init__(self, *args, **kwargs):
     models.Model.__init__(self, *args, **kwargs)

@@ -192,7 +192,7 @@ class BaseGame:
   ELEMENTS_COUNT = 14
   MONSTER_KINDS_COUNT = 14
 
-  def _generate_day(self, daynum, dayclass=Day):
+  def _generate_day(self, daynum):
     element_maker = tw.TriangleWeight(self.ELEMENTS_COUNT)
     monster_maker = tw.TriangleWeight(self.MONSTER_KINDS_COUNT)
     attributes = {
@@ -226,6 +226,12 @@ class BaseGame:
 
   def current_day(self):
     return next((day for day in self.days() if not day.played), None)
+
+  # on or before current day
+  def viewable_day(self, daynum):
+    if daynum > self.current_day().daynum:
+      return None
+    return self.day(daynum)
 
   def gold(self):
     return sum([day.net_gold() for day in self.days()])

@@ -1,0 +1,10 @@
+<p>Playing game {{ game.id }}</p>
+
+{% if day %}
+<p>Viewing day {{ day.daynum }}</p>
+{% for job in game.JOBS %}
+<button type="submit" name="job" value="{{ job }}">{{ job|title }}</button>
+{% endfor %}
+{% else %}
+<p>Day is locked</p>
+{% endif %}
